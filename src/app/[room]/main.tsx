@@ -77,9 +77,9 @@ function SelectableCardButton(props: {
 
 function CardPicker() {
   const room = useRoomContext()!;
-  const user = useAuthContext()!;
+  const user = useAuthContext();
 
-  const selectedCard = room.votes[user!.uid];
+  const selectedCard = user ? room.votes[user!.uid] : null;
 
   return (
     <div className="absolute flex gap-4 bottom-4 justify-evenly">
@@ -87,7 +87,9 @@ function CardPicker() {
         <SelectableCardButton
           key={idx}
           onClick={async (value) => {
-            await updatePlayerCard(room.id, user.uid, value);
+            if (user) {
+              await updatePlayerCard(room.id, user.uid, value);
+            }
           }}
           selected={selectedCard === card}
           value={card}

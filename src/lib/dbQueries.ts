@@ -35,19 +35,6 @@ export async function getRoomById(roomId: string): Promise<RoomCreated | null> {
   return { ...data, id: docSnap.id };
 }
 
-export function getRoomSnapshotById(
-  roomId: string,
-  callback: (room: RoomCreated) => void,
-) {
-  const docRef = doc(db, 'rooms', roomId);
-  return onSnapshot(docRef, (docSnap) => {
-    if (docSnap.exists()) {
-      const data = RoomSchema.parse(docSnap.data());
-      callback({ ...data, id: docSnap.id });
-    }
-  });
-}
-
 export function onRoomChanged(
   roomId: string,
   callback: (room: RoomCreated) => void,
@@ -66,20 +53,6 @@ export function updateRoom(roomId: string, room: Partial<Room>) {
   const docRef = doc(db, 'rooms', roomId);
 
   return updateDoc(docRef, roomResult);
-}
-
-export function getAuthUser(): User | null {
-  const user = auth.currentUser;
-
-  if (!user) {
-    return null;
-  }
-
-  return {
-    uid: user.uid,
-    displayName: user.displayName!,
-    isAnonymous: user.isAnonymous,
-  };
 }
 
 export async function signInAnon(displayName?: string): Promise<User> {

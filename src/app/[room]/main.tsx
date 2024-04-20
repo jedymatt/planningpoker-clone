@@ -222,7 +222,7 @@ export default function MainPage() {
         <div></div>
       </div>
 
-      {user && <CardPicker />}
+      {!room.revealCards && <CardPicker />}
       <LoginDialog show={!user} />
     </div>
   );

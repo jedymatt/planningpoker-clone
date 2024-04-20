@@ -186,7 +186,7 @@ function VotingResultSection() {
                   style={{
                     height: filledHeight,
                   }}
-                  className="absolute bottom-0 inset-x-0 bg-slate-800"
+                  className="absolute bottom-0 inset-x-0 bg-slate-800 rounded"
                 ></div>
               </div>
               <div className="h-20 w-12 border-2 border-slate-800 rounded-md flex justify-center items-center">

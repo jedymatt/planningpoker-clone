@@ -15,7 +15,7 @@ function Navbar() {
         <div className="flex gap-4 items-center">
             {user && <div className="flex items-center">
                 <img
-                    src={`https://ui-avatars.com/api/?name=${(Object.entries({
+                    src={`https://ui-avatars.com/api/?${(Object.entries({
                         name: user.displayName ? user.displayName[0] : 'U',
                         color: "74b3ff",
                         background: "ebf4ff",

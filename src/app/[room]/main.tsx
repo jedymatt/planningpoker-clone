@@ -164,16 +164,7 @@ function VotingResultSection() {
       },
       [] as { vote: string; count: number }[],
     )
-    .sort((a, b) => {
-      // todo: sort by index of card instead
-      const direction = a.count - b.count;
-
-      if (direction === 0) {
-        return room.cards.indexOf(a.vote) - room.cards.indexOf(b.vote);
-      }
-
-      return direction;
-    });
+    .sort((a, b) => room.cards.indexOf(a.vote) - room.cards.indexOf(b.vote));
 
   const totalValidVotes = result.reduce((acc, { count }) => acc + count, 0);
   const canCalculateAverage = votes.every((e) => !isNaN(Number(e)));

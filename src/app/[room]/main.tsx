@@ -168,6 +168,7 @@ function VotingResultSection() {
 
   const totalValidVotes = result.reduce((acc, { count }) => acc + count, 0);
   const canCalculateAverage = votes.every((e) => !isNaN(Number(e)));
+  const highestVoteCount = Math.max(...result.map((e) => e.count));
 
   return (
     <div className="flex">
@@ -176,6 +177,7 @@ function VotingResultSection() {
           const percentOfVoters = count / totalValidVotes;
           const maxHeight = 80; // 80px ~ 5rem ~ h-20
           const filledHeight = Math.round(maxHeight * percentOfVoters);
+          const isHighest = highestVoteCount === count;
           return (
             <div key={vote} className="flex flex-col items-center gap-y-2">
               <div
@@ -186,13 +188,33 @@ function VotingResultSection() {
                   style={{
                     height: filledHeight,
                   }}
-                  className="absolute bottom-0 inset-x-0 bg-slate-800 rounded"
+                  className={cn(
+                    'absolute bottom-0 inset-x-0 rounded bg-neutral-400',
+                    isHighest && 'bg-slate-800',
+                  )}
                 ></div>
               </div>
-              <div className="h-20 w-12 border-2 border-slate-800 rounded-md flex justify-center items-center">
-                <span className="font-semibold text-slate-800">{vote}</span>
+              <div
+                className={cn(
+                  'h-20 w-12 border-2 rounded-md flex justify-center items-center border-neutral-400',
+                  isHighest && 'border-slate-800',
+                )}
+              >
+                <span
+                  className={cn(
+                    'font-semibold text-neutral-400',
+                    isHighest && 'text-slate-800',
+                  )}
+                >
+                  {vote}
+                </span>
               </div>
-              <span className="text-slate-700">
+              <span
+                className={cn(
+                  'text-neutral-400',
+                  isHighest && 'text-slate-700',
+                )}
+              >
                 {count} Vote{count > 1 && 's'}
               </span>
             </div>

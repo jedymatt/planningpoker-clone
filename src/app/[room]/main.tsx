@@ -13,7 +13,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useRoomContext } from '@/app/[room]/room';
 import { useAuthContext } from '@/app/auth';
 import { Card } from '@/app/[room]/card';
-import { uniq } from 'lodash';
+import { meanBy, round, sumBy, uniq } from 'lodash';
 
 function StartVotingButton() {
   const room = useRoomContext()!;
@@ -149,7 +149,6 @@ function LoginDialog({ show }: { show: boolean }) {
 
 function VotingResultSection() {
   const room = useRoomContext()!;
-
   const votes = Object.values(room.votes);
   const result = uniq(votes)
     .filter((e): e is string => e !== undefined && e !== null)
@@ -166,6 +165,7 @@ function VotingResultSection() {
       [] as { vote: string; count: number }[],
     )
     .sort((a, b) => {
+      // todo: sort by index of card instead
       const direction = a.count - b.count;
 
       if (direction === 0) {
@@ -176,35 +176,51 @@ function VotingResultSection() {
     });
 
   const totalValidVotes = result.reduce((acc, { count }) => acc + count, 0);
+  const canCalculateAverage = votes.every((e) => !isNaN(Number(e)));
 
   return (
-    <div className="flex items-center gap-4">
-      {result.map(({ vote, count }) => {
-        const percentOfVoters = count / totalValidVotes;
-        const maxHeight = 80; // 80px ~ 5rem ~ h-20
-        const filledHeight = Math.round(maxHeight * percentOfVoters);
-        console.log(filledHeight);
-
-        return (
-          <div key={vote} className="flex flex-col items-center gap-y-2">
-            <div
-              style={{ height: maxHeight }}
-              className="w-2 relative bg-gray-200 rounded overflow-clip"
-            >
+    <div className="flex">
+      <div className="flex items-center gap-4">
+        {result.map(({ vote, count }) => {
+          const percentOfVoters = count / totalValidVotes;
+          const maxHeight = 80; // 80px ~ 5rem ~ h-20
+          const filledHeight = Math.round(maxHeight * percentOfVoters);
+          return (
+            <div key={vote} className="flex flex-col items-center gap-y-2">
               <div
-                style={{
-                  height: filledHeight,
-                }}
-                className="absolute bottom-0 inset-x-0 bg-slate-800"
-              ></div>
+                style={{ height: maxHeight }}
+                className="w-2 relative bg-gray-200 rounded overflow-clip"
+              >
+                <div
+                  style={{
+                    height: filledHeight,
+                  }}
+                  className="absolute bottom-0 inset-x-0 bg-slate-800"
+                ></div>
+              </div>
+              <div className="h-20 w-12 border-2 border-slate-800 rounded-md flex justify-center items-center">
+                <span className="font-semibold text-slate-800">{vote}</span>
+              </div>
+              <span className="text-slate-700">
+                {count} Vote{count > 1 && 's'}
+              </span>
             </div>
-            <div className="h-20 w-12 border-2 border-slate-800 rounded-md flex justify-center items-center">
-              <span className="font-semibold text-slate-800">{vote}</span>
-            </div>
-            <span className="text-slate-700">{count} Vote{count > 1 && 's'}</span>
+          );
+        })}
+      </div>
+      {canCalculateAverage && (
+        <div className="ml-16 flex text-center flex-col items-center justify-center">
+          <span className="text-lg text-gray-700">Average:</span>
+          <div className="mt-2">
+            <span className="text-3xl font-bold">
+              {round(
+                meanBy(votes, (e) => Number(e)),
+                1,
+              )}
+            </span>
           </div>
-        );
-      })}
+        </div>
+      )}
     </div>
   );
 }

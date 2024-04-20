@@ -237,13 +237,7 @@ export default function MainPage() {
           {topSide.map((player) => (
             <Card
               key={player.userId}
-              state={
-                room.votes[player.userId]
-                  ? room.revealCards
-                    ? 'face-up'
-                    : 'face-down'
-                  : 'blank'
-              }
+              state={room.revealCards ? 'reveal' : 'hide'}
               playerName={player.displayName}
               value={room.votes[player.userId]}
             />
@@ -254,13 +248,7 @@ export default function MainPage() {
           {leftSide.map((player) => (
             <Card
               key={player.userId}
-              state={
-                room.votes[player.userId]
-                  ? room.revealCards
-                    ? 'face-up'
-                    : 'face-down'
-                  : 'blank'
-              }
+              state={room.revealCards ? 'reveal' : 'hide'}
               playerName={player.displayName}
               value={room.votes[player.userId]}
             />
@@ -275,13 +263,7 @@ export default function MainPage() {
           {rightSide.map((player) => (
             <Card
               key={player.userId}
-              state={
-                room.votes[player.userId]
-                  ? room.revealCards
-                    ? 'face-up'
-                    : 'face-down'
-                  : 'blank'
-              }
+              state={room.revealCards ? 'reveal' : 'hide'}
               playerName={player.displayName}
               value={room.votes[player.userId]}
             />
@@ -292,13 +274,7 @@ export default function MainPage() {
           {bottomSide.map((player) => (
             <Card
               key={player.userId}
-              state={
-                room.votes[player.userId]
-                  ? room.revealCards
-                    ? 'face-up'
-                    : 'face-down'
-                  : 'blank'
-              }
+              state={room.revealCards ? 'reveal' : 'hide'}
               playerName={player.displayName}
               value={room.votes[player.userId]}
             />

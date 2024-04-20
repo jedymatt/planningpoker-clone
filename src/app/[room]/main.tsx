@@ -1,6 +1,12 @@
 'use client';
 
-import { joinRoom, signInAnon, updatePlayerCard } from '@/lib/dbQueries';
+import {
+  joinRoom,
+  revealCards,
+  signInAnon,
+  startVoting,
+  updatePlayerCard,
+} from '@/lib/dbQueries';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
@@ -10,9 +16,31 @@ import { useAuthContext } from '@/app/auth';
 import { Card } from '@/app/[room]/card';
 
 function StartVotingButton() {
+  const room = useRoomContext()!;
+
   return (
-    <button className="px-4 py-2 font-bold text-white rounded bg-slate-600 hover:bg-slate-800">
+    <button
+      onClick={async () => {
+        await startVoting(room.id);
+      }}
+      className="px-4 py-2 font-bold text-white rounded bg-slate-600 hover:bg-slate-800"
+    >
       Start new voting
+    </button>
+  );
+}
+
+function RevealCardsButton() {
+  const room = useRoomContext()!;
+
+  return (
+    <button
+      onClick={async () => {
+        await revealCards(room.id);
+      }}
+      className="px-4 py-2 font-bold text-white rounded bg-slate-600 hover:bg-slate-800"
+    >
+      Reveal Cards
     </button>
   );
 }
@@ -155,11 +183,7 @@ export default function MainPage() {
     firstPlayers.push(...room.players);
   }
 
-  console.table({ playersCount, firstPlayers, players: room.players });
-
-  console.log('firstPlayers', firstPlayers);
-  console.log('extraPlayers', extraPlayers);
-
+  // TODO: Improve this
   const topSide: { displayName: string; userId: string }[] = [];
   const leftSide: { displayName: string; userId: string }[] = [];
   const rightSide: { displayName: string; userId: string }[] = [];
@@ -213,7 +237,13 @@ export default function MainPage() {
           {topSide.map((player) => (
             <Card
               key={player.userId}
-              state={room.votes[player.userId] ? 'face-down' : 'blank'}
+              state={
+                room.votes[player.userId]
+                  ? room.revealCards
+                    ? 'face-up'
+                    : 'face-down'
+                  : 'blank'
+              }
               playerName={player.displayName}
               value={room.votes[player.userId]}
             />
@@ -224,7 +254,13 @@ export default function MainPage() {
           {leftSide.map((player) => (
             <Card
               key={player.userId}
-              state={room.votes[player.userId] ? 'face-down' : 'blank'}
+              state={
+                room.votes[player.userId]
+                  ? room.revealCards
+                    ? 'face-up'
+                    : 'face-down'
+                  : 'blank'
+              }
               playerName={player.displayName}
               value={room.votes[player.userId]}
             />
@@ -232,14 +268,20 @@ export default function MainPage() {
         </div>
         <div className="flex items-center justify-center bg-blue-100 auto-cols-max rounded-3xl min-h-48 min-w-72">
           <div>
-            <StartVotingButton />
+            {room.revealCards ? <StartVotingButton /> : <RevealCardsButton />}
           </div>
         </div>
         <div className="flex">
           {rightSide.map((player) => (
             <Card
               key={player.userId}
-              state={room.votes[player.userId] ? 'face-down' : 'blank'}
+              state={
+                room.votes[player.userId]
+                  ? room.revealCards
+                    ? 'face-up'
+                    : 'face-down'
+                  : 'blank'
+              }
               playerName={player.displayName}
               value={room.votes[player.userId]}
             />
@@ -250,7 +292,13 @@ export default function MainPage() {
           {bottomSide.map((player) => (
             <Card
               key={player.userId}
-              state={room.votes[player.userId] ? 'face-down' : 'blank'}
+              state={
+                room.votes[player.userId]
+                  ? room.revealCards
+                    ? 'face-up'
+                    : 'face-down'
+                  : 'blank'
+              }
               playerName={player.displayName}
               value={room.votes[player.userId]}
             />

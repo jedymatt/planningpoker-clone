@@ -11,10 +11,11 @@ export type User = z.infer<typeof UserSchema>;
 export const RoomSchema = z.object({
     name: z.string(),
     cards: z.string().array(),
-    players: z.object({
-        userId: z.string(),
-        displayName: z.string(),
-    })
+    players: z
+        .object({
+            userId: z.string(),
+            displayName: z.string(),
+        })
         .array()
         .optional()
         .default([]),
@@ -22,10 +23,7 @@ export const RoomSchema = z.object({
         .record(z.string().describe("user id"), z.string().nullish().describe("card"))
         .optional()
         .default({}),
-    votes_history: z.record(z.string().describe("user id"), z.string().nullish().describe("card"))
-        .array()
-        .optional()
-        .default([]),
+    revealCards: z.boolean().default(false),
 });
 
 export const RoomCreatedSchema = RoomSchema.extend({

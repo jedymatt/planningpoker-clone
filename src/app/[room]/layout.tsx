@@ -1,8 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import { RoomContextProvider, useRoomContext } from '@/app/[room]/room';
 import { useAuthContext } from '@/app/auth';
+import { ReactNode } from 'react';
 
 function Navbar() {
   const room = useRoomContext();
@@ -18,7 +18,7 @@ function Navbar() {
           <div className="flex items-center">
             <img
               src={`https://ui-avatars.com/api/?${Object.entries({
-                name: user.displayName ? user.displayName[0] : 'U',
+                name: user.displayName[0],
                 color: '74b3ff',
                 background: 'ebf4ff',
                 bold: true,
@@ -61,7 +61,7 @@ export default function RootLayout({
   children,
 }: Readonly<{
   params: { room: string };
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <RoomContextProvider roomId={params.room}>

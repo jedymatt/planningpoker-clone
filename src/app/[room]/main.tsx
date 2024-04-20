@@ -8,7 +8,6 @@ import {
   updatePlayerCard,
 } from '@/lib/dbQueries';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useRoomContext } from '@/app/[room]/room';
@@ -97,16 +96,12 @@ function CardPicker() {
   );
 }
 
-function LoginForm({ roomId }: { roomId: string }) {
+function LoginForm() {
   const { pending } = useFormStatus();
-  const router = useRouter();
-  const user = useAuthContext();
 
   const onSubmit = async (e: FormData) => {
     const displayName = e.get('displayName')! as string;
     await signInAnon(displayName);
-    await joinRoom(user!, roomId);
-    router.refresh();
   };
 
   return (
@@ -143,7 +138,7 @@ function LoginDialog({ show }: { show: boolean }) {
       <Dialog.Portal>
         <Dialog.Overlay className="bg-neutral-800/10 fixed inset-0" />
         <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none">
-          <LoginForm roomId={room.id} />
+          <LoginForm />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
@@ -153,20 +148,11 @@ function LoginDialog({ show }: { show: boolean }) {
 export default function MainPage() {
   const room = useRoomContext();
   const user = useAuthContext();
+  // const [showingInviteModal, setShowingInviteModal] = useState(false);
 
   if (!room) {
     return <div>Loading...</div>;
   }
-
-  // const [showingInviteModal, setShowingInviteModal] = useState(false);
-
-  // if (!user) {
-  //     return (
-  //         <div className="grid place-items-center min-h-screen">
-  //             <LoginForm roomId={room.id}/>
-  //         </div>
-  //     );
-  // }
 
   if (user && !room.players.some((pl) => pl.userId === user.uid)) {
     joinRoom(user, room.id);
@@ -183,7 +169,7 @@ export default function MainPage() {
     firstPlayers.push(...room.players);
   }
 
-  // TODO: Improve this
+  // FIXME: Other cards/players not visible. e.g. the 3rd card is not shown
   const topSide: { displayName: string; userId: string }[] = [];
   const leftSide: { displayName: string; userId: string }[] = [];
   const rightSide: { displayName: string; userId: string }[] = [];

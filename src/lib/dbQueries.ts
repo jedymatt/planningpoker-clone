@@ -1,8 +1,4 @@
-import {
-  signInAnonymously,
-  updateProfile,
-  User as FirebaseUser,
-} from 'firebase/auth';
+import { signInAnonymously, updateProfile } from 'firebase/auth';
 import {
   addDoc,
   collection,
@@ -55,14 +51,15 @@ export function updateRoom(roomId: string, room: Partial<Room>) {
   return updateDoc(docRef, roomResult);
 }
 
-export async function signInAnon(displayName?: string): Promise<User> {
+export async function signInAnon(displayName: string): Promise<User> {
+  localStorage.setItem('initialDisplayName', displayName); // needed for onAuthStateChanged to work
   const { user } = await signInAnonymously(auth);
   await updateProfile(user, { displayName });
 
   return UserSchema.parse(user);
 }
 
-export async function joinRoom(user: FirebaseUser, roomId: string) {
+export async function joinRoom(user: User, roomId: string) {
   const docRef = doc(db, 'rooms', roomId);
   const docSnap = await getDoc(docRef);
 
@@ -76,14 +73,12 @@ export async function joinRoom(user: FirebaseUser, roomId: string) {
     return;
   }
 
-  console.log(user.displayName);
-
   await updateDoc(docRef, <z.infer<typeof PlayerOnlySchema>>{
     players: [
       ...players,
       {
         userId: user.uid,
-        displayName: user.displayName!,
+        displayName: user.displayName,
       },
     ],
   });

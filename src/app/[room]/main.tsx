@@ -7,12 +7,13 @@ import {
   startVoting,
   updatePlayerCard,
 } from '@/lib/dbQueries';
-import { cn } from '@/lib/utils';
+import { cn, distributeSeat } from '@/lib/utils';
 import { useFormStatus } from 'react-dom';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useRoomContext } from '@/app/[room]/room';
 import { useAuthContext } from '@/app/auth';
 import { Card } from '@/app/[room]/card';
+import { Room } from '@/lib/types';
 
 function StartVotingButton() {
   const room = useRoomContext()!;
@@ -132,7 +133,6 @@ function LoginForm() {
 }
 
 function LoginDialog({ show }: { show: boolean }) {
-  const room = useRoomContext()!;
   return (
     <Dialog.Root open={show}>
       <Dialog.Portal>
@@ -158,56 +158,7 @@ export default function MainPage() {
     joinRoom(user, room.id);
   }
 
-  const playersCount = Object.keys(room.players).length;
-  const firstPlayers: { displayName: string; userId: string }[] = [];
-  const extraPlayers: { displayName: string; userId: string }[] = [];
-
-  if (playersCount > 6) {
-    firstPlayers.push(...room.players.slice(0, 8));
-    extraPlayers.push(...room.players.slice(8));
-  } else {
-    firstPlayers.push(...room.players);
-  }
-
-  // FIXME: Other cards/players not visible. e.g. the 3rd card is not shown
-  const topSide: { displayName: string; userId: string }[] = [];
-  const leftSide: { displayName: string; userId: string }[] = [];
-  const rightSide: { displayName: string; userId: string }[] = [];
-  const bottomSide: { displayName: string; userId: string }[] = [];
-
-  const count = firstPlayers.length;
-  const hasLeftSide = count > 6;
-  const hasRightSide = count > 7;
-  const wingSideCount = hasRightSide ? 2 : hasLeftSide ? 1 : 0;
-  const topSidePlayerCount = Math.ceil((count - wingSideCount) / 2);
-  const bottomSidePlayerCount = count - topSidePlayerCount;
-  topSide.push(...firstPlayers.slice(0, topSidePlayerCount));
-  bottomSide.push(
-    ...firstPlayers.slice(topSidePlayerCount, bottomSidePlayerCount + 1),
-  );
-  // todo: alternate swapping of top and bottom sides
-
-  leftSide.push(
-    ...(hasLeftSide
-      ? firstPlayers.slice(topSidePlayerCount + bottomSidePlayerCount - 2, -1)
-      : []),
-  );
-  rightSide.push(
-    ...(hasRightSide
-      ? firstPlayers.slice(topSidePlayerCount + bottomSidePlayerCount - 1)
-      : []),
-  );
-
-  if (extraPlayers.length > 0) {
-    // alternate between top and bottom
-    extraPlayers.forEach((player, index) => {
-      if (index % 2 === 0) {
-        topSide.push(player);
-      } else {
-        bottomSide.push(player);
-      }
-    });
-  }
+  const { top, bottom, left, right } = distributeSeat(room.players);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -220,7 +171,7 @@ export default function MainPage() {
       >
         <div></div>
         <div className="flex justify-around px-12 gap-x-12">
-          {topSide.map((player) => (
+          {top.map((player) => (
             <Card
               key={player.userId}
               state={room.revealCards ? 'reveal' : 'hide'}
@@ -231,7 +182,7 @@ export default function MainPage() {
         </div>
         <div></div>
         <div className="flex justify-end">
-          {leftSide.map((player) => (
+          {left.map((player) => (
             <Card
               key={player.userId}
               state={room.revealCards ? 'reveal' : 'hide'}
@@ -246,7 +197,7 @@ export default function MainPage() {
           </div>
         </div>
         <div className="flex">
-          {rightSide.map((player) => (
+          {right.map((player) => (
             <Card
               key={player.userId}
               state={room.revealCards ? 'reveal' : 'hide'}
@@ -257,7 +208,7 @@ export default function MainPage() {
         </div>
         <div></div>
         <div className="flex justify-around px-12 gap-x-12">
-          {bottomSide.map((player) => (
+          {bottom.map((player) => (
             <Card
               key={player.userId}
               state={room.revealCards ? 'reveal' : 'hide'}

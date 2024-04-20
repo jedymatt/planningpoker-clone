@@ -7,7 +7,7 @@ import {
   startVoting,
   updatePlayerCard,
 } from '@/lib/dbQueries';
-import { cn } from '@/lib/utils';
+import { cn, distributeSeat } from '@/lib/utils';
 import { useFormStatus } from 'react-dom';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useRoomContext } from '@/app/[room]/room';
@@ -158,16 +158,7 @@ export default function MainPage() {
     joinRoom(user, room.id);
   }
 
-  const topSide: Room['players'] = [];
-  const bottomSide: Room['players'] = [];
-
-  room.players.forEach((player, index) => {
-    if (index % 2 === 0) {
-      topSide.push(player);
-    } else {
-      bottomSide.push(player);
-    }
-  });
+  const { top, bottom, left, right } = distributeSeat(room.players);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -180,7 +171,7 @@ export default function MainPage() {
       >
         <div></div>
         <div className="flex justify-around px-12 gap-x-12">
-          {topSide.map((player) => (
+          {top.map((player) => (
             <Card
               key={player.userId}
               state={room.revealCards ? 'reveal' : 'hide'}
@@ -191,14 +182,14 @@ export default function MainPage() {
         </div>
         <div></div>
         <div className="flex justify-end">
-          {/*{leftSide.map((player) => (*/}
-          {/*  <Card*/}
-          {/*    key={player.userId}*/}
-          {/*    state={room.revealCards ? 'reveal' : 'hide'}*/}
-          {/*    playerName={player.displayName}*/}
-          {/*    value={room.votes[player.userId]}*/}
-          {/*  />*/}
-          {/*))}*/}
+          {left.map((player) => (
+            <Card
+              key={player.userId}
+              state={room.revealCards ? 'reveal' : 'hide'}
+              playerName={player.displayName}
+              value={room.votes[player.userId]}
+            />
+          ))}
         </div>
         <div className="flex items-center justify-center bg-blue-100 auto-cols-max rounded-3xl min-h-48 min-w-72">
           <div>
@@ -206,18 +197,18 @@ export default function MainPage() {
           </div>
         </div>
         <div className="flex">
-          {/*{rightSide.map((player) => (*/}
-          {/*  <Card*/}
-          {/*    key={player.userId}*/}
-          {/*    state={room.revealCards ? 'reveal' : 'hide'}*/}
-          {/*    playerName={player.displayName}*/}
-          {/*    value={room.votes[player.userId]}*/}
-          {/*  />*/}
-          {/*))}*/}
+          {right.map((player) => (
+            <Card
+              key={player.userId}
+              state={room.revealCards ? 'reveal' : 'hide'}
+              playerName={player.displayName}
+              value={room.votes[player.userId]}
+            />
+          ))}
         </div>
         <div></div>
         <div className="flex justify-around px-12 gap-x-12">
-          {bottomSide.map((player) => (
+          {bottom.map((player) => (
             <Card
               key={player.userId}
               state={room.revealCards ? 'reveal' : 'hide'}

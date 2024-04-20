@@ -13,7 +13,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useRoomContext } from '@/app/[room]/room';
 import { useAuthContext } from '@/app/auth';
 import { Card } from '@/app/[room]/card';
-import { Room } from '@/lib/types';
+import { uniq } from 'lodash';
 
 function StartVotingButton() {
   const room = useRoomContext()!;
@@ -147,6 +147,68 @@ function LoginDialog({ show }: { show: boolean }) {
   );
 }
 
+function VotingResultSection() {
+  const room = useRoomContext()!;
+
+  const votes = Object.values(room.votes);
+  const result = uniq(votes)
+    .filter((e): e is string => e !== undefined && e !== null)
+    .reduce(
+      (acc, value) => {
+        return [
+          ...acc,
+          {
+            vote: value,
+            count: votes.filter((e) => e === value).length,
+          },
+        ];
+      },
+      [] as { vote: string; count: number }[],
+    )
+    .sort((a, b) => {
+      const direction = a.count - b.count;
+
+      if (direction === 0) {
+        return room.cards.indexOf(a.vote) - room.cards.indexOf(b.vote);
+      }
+
+      return direction;
+    });
+
+  const totalValidVotes = result.reduce((acc, { count }) => acc + count, 0);
+
+  return (
+    <div className="flex items-center gap-4">
+      {result.map(({ vote, count }) => {
+        const percentOfVoters = count / totalValidVotes;
+        const maxHeight = 80; // 80px ~ 5rem ~ h-20
+        const filledHeight = Math.round(maxHeight * percentOfVoters);
+        console.log(filledHeight);
+
+        return (
+          <div key={vote} className="flex flex-col items-center gap-y-2">
+            <div
+              style={{ height: maxHeight }}
+              className="w-2 relative bg-gray-200 rounded overflow-clip"
+            >
+              <div
+                style={{
+                  height: filledHeight,
+                }}
+                className="absolute bottom-0 inset-x-0 bg-slate-800"
+              ></div>
+            </div>
+            <div className="h-20 w-12 border-2 border-slate-800 rounded-md flex justify-center items-center">
+              <span className="font-semibold text-slate-800">{vote}</span>
+            </div>
+            <span className="text-slate-700">{count} Vote{count > 1 && 's'}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function MainPage() {
   const room = useRoomContext();
   const user = useAuthContext();
@@ -163,66 +225,77 @@ export default function MainPage() {
   const { top, bottom, left, right } = distributeSeat(room.players);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div
-        style={{
-          gridTemplateColumns: '8rem 1fr 8rem',
-          gridTemplateRows: 'auto 1fr auto',
-        }}
-        className="grid gap-4"
-      >
-        <div></div>
-        <div className="flex justify-around px-12 gap-x-12">
-          {top.map((player) => (
-            <Card
-              key={player.userId}
-              state={room.revealCards ? 'reveal' : 'hide'}
-              playerName={player.displayName}
-              value={room.votes[player.userId]}
-            />
-          ))}
-        </div>
-        <div></div>
-        <div className="flex justify-end">
-          {left.map((player) => (
-            <Card
-              key={player.userId}
-              state={room.revealCards ? 'reveal' : 'hide'}
-              playerName={player.displayName}
-              value={room.votes[player.userId]}
-            />
-          ))}
-        </div>
-        <div className="flex items-center justify-center bg-blue-100 auto-cols-max rounded-3xl min-h-48 min-w-72">
-          <div>
-            {room.revealCards ? <StartVotingButton /> : <RevealCardsButton />}
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-grow flex items-center justify-center">
+        <div
+          style={{
+            gridTemplateColumns: '8rem 1fr 8rem',
+            gridTemplateRows: 'auto 1fr auto',
+          }}
+          className="grid gap-4"
+        >
+          <div></div>
+          <div className="flex justify-around px-12 gap-x-12">
+            {top.map((player) => (
+              <Card
+                key={player.userId}
+                state={room.revealCards ? 'reveal' : 'hide'}
+                playerName={player.displayName}
+                value={room.votes[player.userId]}
+              />
+            ))}
           </div>
+          <div></div>
+          <div className="flex justify-end">
+            {left.map((player) => (
+              <Card
+                key={player.userId}
+                state={room.revealCards ? 'reveal' : 'hide'}
+                playerName={player.displayName}
+                value={room.votes[player.userId]}
+              />
+            ))}
+          </div>
+          <div className="flex items-center justify-center bg-blue-100 auto-cols-max rounded-3xl min-h-48 min-w-72">
+            <div>
+              {room.revealCards ? <StartVotingButton /> : <RevealCardsButton />}
+            </div>
+          </div>
+          <div className="flex">
+            {right.map((player) => (
+              <Card
+                key={player.userId}
+                state={room.revealCards ? 'reveal' : 'hide'}
+                playerName={player.displayName}
+                value={room.votes[player.userId]}
+              />
+            ))}
+          </div>
+          <div></div>
+          <div className="flex justify-around px-12 gap-x-12">
+            {bottom.map((player) => (
+              <Card
+                key={player.userId}
+                state={room.revealCards ? 'reveal' : 'hide'}
+                playerName={player.displayName}
+                value={room.votes[player.userId]}
+              />
+            ))}
+          </div>
+          <div></div>
         </div>
-        <div className="flex">
-          {right.map((player) => (
-            <Card
-              key={player.userId}
-              state={room.revealCards ? 'reveal' : 'hide'}
-              playerName={player.displayName}
-              value={room.votes[player.userId]}
-            />
-          ))}
-        </div>
-        <div></div>
-        <div className="flex justify-around px-12 gap-x-12">
-          {bottom.map((player) => (
-            <Card
-              key={player.userId}
-              state={room.revealCards ? 'reveal' : 'hide'}
-              playerName={player.displayName}
-              value={room.votes[player.userId]}
-            />
-          ))}
-        </div>
-        <div></div>
       </div>
+      {!room.revealCards && (
+        <div className="flex justify-center items-center bg-white">
+          <CardPicker />
+        </div>
+      )}
 
-      {!room.revealCards && <CardPicker />}
+      {room.revealCards && (
+        <div className="flex justify-center items-center py-4">
+          <VotingResultSection />
+        </div>
+      )}
       <LoginDialog show={!user} />
     </div>
   );

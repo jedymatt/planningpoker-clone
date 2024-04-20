@@ -202,7 +202,7 @@ function VotingResultSection() {
               >
                 <span
                   className={cn(
-                    'font-semibold text-neutral-400',
+                    'font-bold text-neutral-400',
                     isHighest && 'text-slate-800',
                   )}
                 >

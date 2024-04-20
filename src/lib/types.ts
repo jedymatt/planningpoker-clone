@@ -3,7 +3,6 @@ import { z } from 'zod';
 export const UserSchema = z.object({
   uid: z.string(),
   displayName: z.string(),
-  isAnonymous: z.boolean(),
 });
 
 export type User = z.infer<typeof UserSchema>;

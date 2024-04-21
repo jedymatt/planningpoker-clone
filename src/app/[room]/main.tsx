@@ -13,7 +13,7 @@ import {
 import { cn, distributeSeat } from '@/lib/utils';
 import * as Dialog from '@radix-ui/react-dialog';
 import { motion } from 'framer-motion';
-import { meanBy, round, uniq } from 'lodash';
+import { mean, round, uniq } from 'lodash';
 import { HTMLProps } from 'react';
 import { useFormStatus } from 'react-dom';
 import { TextField } from '../_ui/TextField';
@@ -176,8 +176,9 @@ function VotingResultSection({
     .sort((a, b) => room.cards.indexOf(a.vote) - room.cards.indexOf(b.vote));
 
   const totalValidVotes = result.reduce((acc, { count }) => acc + count, 0);
-  const canCalculateAverage = votes.every((e) => !isNaN(Number(e)));
   const highestVoteCount = Math.max(...result.map((e) => e.count));
+  const numbersInVote = votes.map((e) => Number(e)).filter((e) => !isNaN(e));
+  const canCalculateAverage = numbersInVote.length > 0;
 
   return (
     <div {...props} className={cn('flex', className, 'voting-result-section')}>
@@ -235,10 +236,7 @@ function VotingResultSection({
           <span className="text-lg text-gray-700">Average:</span>
           <div className="mt-2">
             <span className="text-3xl font-bold">
-              {round(
-                meanBy(votes, (e) => Number(e)),
-                1,
-              )}
+              {round(mean(numbersInVote), 1)}
             </span>
           </div>
         </div>

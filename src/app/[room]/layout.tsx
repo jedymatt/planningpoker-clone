@@ -9,7 +9,7 @@ function Navbar() {
   const user = useAuthContext();
 
   return (
-    <nav className="absolute top-0 inset-x-0 flex px-12">
+    <nav className="flex px-12">
       <div className="flex-grow py-6">
         <span className="font-semibold text-xl">{room?.name}</span>
       </div>
@@ -65,9 +65,12 @@ export default function RootLayout({
 }>) {
   return (
     <RoomContextProvider roomId={params.room}>
-      <div className="flex">
+      <div
+        style={{ gridTemplateRows: 'auto 1fr' }}
+        className="grid min-h-screen"
+      >
         <Navbar />
-        <main className="flex-grow">{children}</main>
+        <main>{children}</main>
       </div>
     </RoomContextProvider>
   );

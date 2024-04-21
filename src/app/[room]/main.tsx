@@ -134,9 +134,9 @@ function LoginForm() {
   );
 }
 
-function LoginDialog({ show }: { show: boolean }) {
+function LoginDialog() {
   return (
-    <Dialog.Root open={show}>
+    <Dialog.Root open={true}>
       <Dialog.Portal>
         <Dialog.Overlay className="bg-cyan-950/50 fixed inset-0" />
         <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none border px-10 py-16">
@@ -325,7 +325,7 @@ export default function MainPage() {
           <VotingResultSection />
         </div>
       )}
-      <LoginDialog show={!user} />
+      {!user && <LoginDialog />}
     </div>
   );
 }

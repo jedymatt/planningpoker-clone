@@ -61,7 +61,7 @@ function SelectableCardButton(props: {
     <button
       onClick={onClick}
       className={cn(
-        'relative flex items-center justify-center w-16 h-24 border-2 border-blue-500 rounded-md transition-all',
+        'relative flex items-center justify-center w-12 h-20 border-2 border-blue-500 rounded-md transition-all',
         props.selected
           ? 'bg-blue-500 text-white -translate-y-2'
           : 'hover:-translate-y-1 text-blue-500 hover:bg-blue-50',
@@ -69,7 +69,7 @@ function SelectableCardButton(props: {
     >
       <div
         className={cn(
-          'absolute flex items-center justify-center w-full h-full text-2xl font-bold',
+          'absolute flex items-center justify-center w-full h-full text-lg font-bold',
         )}
       >
         {props.value}

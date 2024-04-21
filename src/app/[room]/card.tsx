@@ -9,7 +9,7 @@ type CardProps = {
 };
 
 export function Card({ playerName, state, value }: CardProps) {
-  if (!value) {
+  if (value == null) {
     return (
       <div className="flex flex-col items-center justify-center">
         <div className="h-20 w-12 bg-gray-200 border rounded-md"></div>

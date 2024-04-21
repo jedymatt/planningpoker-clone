@@ -14,7 +14,7 @@ function Navbar() {
         <span className="font-semibold text-xl">{room?.name}</span>
       </div>
       <div className="flex gap-4 items-center justify-start">
-        {user && (
+        {user && user.displayName && (
           <div className="flex items-center">
             <img
               src={`https://ui-avatars.com/api/?${Object.entries({

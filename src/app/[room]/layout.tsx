@@ -63,6 +63,8 @@ export default function RootLayout({
   params: { room: string };
   children: ReactNode;
 }>) {
+  const user = useAuthContext();
+
   return (
     <RoomContextProvider roomId={params.room}>
       <div
@@ -70,7 +72,7 @@ export default function RootLayout({
         className="grid min-h-screen"
       >
         <Navbar />
-        <main>{children}</main>
+        <main>{user ? children : 'Auth Loading...'}</main>
       </div>
     </RoomContextProvider>
   );

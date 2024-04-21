@@ -6,17 +6,18 @@ import { useAuthContext } from '@/app/auth';
 import {
   joinRoom,
   revealCards,
-  signInAnon,
   startVoting,
   updatePlayerCard,
+  updateRoom,
 } from '@/lib/dbQueries';
 import { cn, distributeSeat } from '@/lib/utils';
 import * as Dialog from '@radix-ui/react-dialog';
 import { motion } from 'framer-motion';
 import { mean, round, uniq } from 'lodash';
-import { HTMLProps } from 'react';
-import { useFormStatus } from 'react-dom';
+import { HTMLProps, useEffect, useState } from 'react';
 import { TextField } from '../_ui/TextField';
+import { auth } from '@/lib/firebase';
+import { updateProfile } from 'firebase/auth';
 
 function StartVotingButton() {
   const room = useRoomContext()!;
@@ -105,12 +106,22 @@ function CardPicker({ className, ...props }: HTMLProps<HTMLDivElement>) {
   );
 }
 
-function LoginForm() {
-  const { pending } = useFormStatus();
-
+function DisplayNameForm() {
+  const room = useRoomContext()!;
   const onSubmit = async (e: FormData) => {
-    const displayName = e.get('displayName')! as string;
-    await signInAnon(displayName);
+    await updateProfile(auth.currentUser!, {
+      displayName: e.get('displayName') as string,
+    });
+    await updateRoom(room.id, {
+      ...room,
+      players: [
+        ...room.players.filter((pl) => pl.userId !== auth.currentUser!.uid),
+        {
+          userId: auth.currentUser!.uid,
+          displayName: auth.currentUser!.displayName!,
+        },
+      ],
+    });
   };
 
   return (
@@ -128,10 +139,7 @@ function LoginForm() {
         />
       </div>
       <div className="mt-6">
-        <button
-          className="w-full bg-blue-500 text-white px-3 py-2 rounded-md font-bold disabled:bg-gray-300"
-          disabled={pending}
-        >
+        <button className="w-full bg-blue-500 text-white px-3 py-2 rounded-md font-bold disabled:bg-gray-300">
           Continue to game
         </button>
       </div>
@@ -139,13 +147,13 @@ function LoginForm() {
   );
 }
 
-function LoginDialog() {
+function DisplayNameDialog() {
   return (
     <Dialog.Root open={true}>
       <Dialog.Portal>
         <Dialog.Overlay className="bg-cyan-950/50 fixed inset-0" />
         <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none border px-8 py-16">
-          <LoginForm />
+          <DisplayNameForm />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
@@ -247,15 +255,33 @@ function VotingResultSection({
 
 export default function MainPage() {
   const room = useRoomContext();
-  const user = useAuthContext();
+  const user = useAuthContext()!;
   // const [showingInviteModal, setShowingInviteModal] = useState(false);
 
-  if (!room) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    const setupRoomPlayer = async () => {
+      // original intention: should be able to join even when displayName is null
+      // not possible for now because we don't have a presence detection implemented
+      // that can cleanup players that leaves
+      if (
+        user.displayName &&
+        room &&
+        !room.players.some((pl) => pl.userId === user.uid)
+      ) {
+        await joinRoom(
+          {
+            uid: user.uid,
+            displayName: user.displayName,
+          },
+          room.id,
+        );
+      }
+    };
+    setupRoomPlayer();
+  }, [room]);
 
-  if (user && !room.players.some((pl) => pl.userId === user.uid)) {
-    joinRoom(user, room.id);
+  if (!room) {
+    return <div>Room Loading...</div>;
   }
 
   const { top, bottom, left, right } = distributeSeat(room.players);
@@ -294,12 +320,12 @@ export default function MainPage() {
           </div>
           <div className="flex items-center justify-center bg-blue-100 auto-cols-max rounded-3xl min-h-48 min-w-72">
             <div>
-              {user && room.votes[user.uid] && room.revealCards && (
-                <StartVotingButton />
-              )}
-              {Object.values(room.votes).filter((e) => e !== null).length > 0 &&
-                !room.revealCards && <RevealCardsButton />}
-              {user && !room.votes[user.uid] && 'Pick your cards!'}
+              {room.revealCards && <StartVotingButton />}
+              {!room.revealCards &&
+                Object.values(room.votes).filter((e) => e !== null).length >
+                  0 && <RevealCardsButton />}
+              {Object.values(room.votes).filter((e) => e !== null).length ===
+                0 && 'Pick your cards!'}
             </div>
           </div>
           <div className="flex">
@@ -342,7 +368,7 @@ export default function MainPage() {
         )}
       </div>
 
-      {!user && <LoginDialog />}
+      {!user.displayName && <DisplayNameDialog />}
     </div>
   );
 }

@@ -108,7 +108,7 @@ function LoginForm() {
   };
 
   return (
-    <form action={onSubmit} className="border px-10 py-16 shadow-md rounded-md">
+    <form action={onSubmit}>
       <div className="font-bold text-slate-900 text-2xl">
         Choose your display name
       </div>
@@ -138,8 +138,8 @@ function LoginDialog({ show }: { show: boolean }) {
   return (
     <Dialog.Root open={show}>
       <Dialog.Portal>
-        <Dialog.Overlay className="bg-neutral-800/10 fixed inset-0" />
-        <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none">
+        <Dialog.Overlay className="bg-cyan-950/50 fixed inset-0" />
+        <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none border px-10 py-16">
           <LoginForm />
         </Dialog.Content>
       </Dialog.Portal>

@@ -17,7 +17,7 @@ export function TextField({
           setHasValue(!!e.target.value);
           onChange?.(e);
         }}
-        className={cn(className, 'peer p-2')}
+        className={cn('peer p-2', className)}
       />
 
       {props.label && (

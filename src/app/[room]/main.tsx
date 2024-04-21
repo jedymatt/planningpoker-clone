@@ -1,5 +1,8 @@
 'use client';
 
+import { Card } from '@/app/[room]/card';
+import { useRoomContext } from '@/app/[room]/room';
+import { useAuthContext } from '@/app/auth';
 import {
   joinRoom,
   revealCards,
@@ -8,12 +11,11 @@ import {
   updatePlayerCard,
 } from '@/lib/dbQueries';
 import { cn, distributeSeat } from '@/lib/utils';
-import { useFormStatus } from 'react-dom';
 import * as Dialog from '@radix-ui/react-dialog';
-import { useRoomContext } from '@/app/[room]/room';
-import { useAuthContext } from '@/app/auth';
-import { Card } from '@/app/[room]/card';
-import { meanBy, round, sumBy, uniq } from 'lodash';
+import { motion } from 'framer-motion';
+import { meanBy, round, uniq } from 'lodash';
+import { HTMLProps } from 'react';
+import { useFormStatus } from 'react-dom';
 import { TextField } from '../_ui/TextField';
 
 function StartVotingButton() {
@@ -39,9 +41,9 @@ function RevealCardsButton() {
       onClick={async () => {
         await revealCards(room.id);
       }}
-      className="px-4 py-2 font-bold text-white rounded bg-slate-600 hover:bg-slate-800"
+      className="px-4 py-2 font-bold text-white rounded bg-blue-500 hover:bg-blue-400/90 transition-all"
     >
-      Reveal Cards
+      Reveal cards
     </button>
   );
 }
@@ -76,14 +78,17 @@ function SelectableCardButton(props: {
   );
 }
 
-function CardPicker() {
+function CardPicker({ className, ...props }: HTMLProps<HTMLDivElement>) {
   const room = useRoomContext()!;
   const user = useAuthContext();
 
   const selectedCard = user ? room.votes[user!.uid] : null;
 
   return (
-    <div className="absolute flex gap-4 bottom-4 justify-evenly">
+    <div
+      {...props}
+      className={cn('absolute flex gap-4 bottom-4 justify-evenly', className)}
+    >
       {room.cards.map((card, idx) => (
         <SelectableCardButton
           key={idx}
@@ -147,8 +152,12 @@ function LoginDialog() {
   );
 }
 
-function VotingResultSection() {
+function VotingResultSection({
+  className,
+  ...props
+}: HTMLProps<HTMLDivElement>) {
   const room = useRoomContext()!;
+
   const votes = Object.values(room.votes);
   const result = uniq(votes)
     .filter((e): e is string => e !== undefined && e !== null)
@@ -171,7 +180,7 @@ function VotingResultSection() {
   const highestVoteCount = Math.max(...result.map((e) => e.count));
 
   return (
-    <div className="flex">
+    <div {...props} className={cn('flex', className, 'voting-result-section')}>
       <div className="flex items-center gap-4">
         {result.map(({ vote, count }) => {
           const percentOfVoters = count / totalValidVotes;
@@ -254,12 +263,12 @@ export default function MainPage() {
   const { top, bottom, left, right } = distributeSeat(room.players);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex-grow flex items-center justify-center">
+    <div className="relative flex flex-col h-full">
+      <div className="flex-grow flex items-center justify-center transition-all transform">
         <div
           style={{
             gridTemplateColumns: '8rem 1fr 8rem',
-            gridTemplateRows: 'auto 1fr auto',
+            gridTemplateRows: '8rem 1fr 8rem',
           }}
           className="grid gap-4"
         >
@@ -287,7 +296,12 @@ export default function MainPage() {
           </div>
           <div className="flex items-center justify-center bg-blue-100 auto-cols-max rounded-3xl min-h-48 min-w-72">
             <div>
-              {room.revealCards ? <StartVotingButton /> : <RevealCardsButton />}
+              {user && room.votes[user.uid] && room.revealCards && (
+                <StartVotingButton />
+              )}
+              {Object.values(room.votes).filter((e) => e !== null).length > 0 &&
+                !room.revealCards && <RevealCardsButton />}
+              {user && !room.votes[user.uid] && 'Pick your cards!'}
             </div>
           </div>
           <div className="flex">
@@ -314,17 +328,22 @@ export default function MainPage() {
           <div></div>
         </div>
       </div>
-      {!room.revealCards && (
-        <div className="flex justify-center items-center bg-white">
-          <CardPicker />
-        </div>
-      )}
 
-      {room.revealCards && (
-        <div className="flex justify-center items-center py-4">
-          <VotingResultSection />
-        </div>
-      )}
+      <div className={'flex justify-center items-center py-4'}>
+        {!room.revealCards && <CardPicker />}
+        {room.revealCards && (
+          <div className="overflow-clip flex justify-center items-center bg-stone-50">
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              transition={{ type: 'tween', duration: 0.2 }}
+            >
+              <VotingResultSection />
+            </motion.div>
+          </div>
+        )}
+      </div>
+
       {!user && <LoginDialog />}
     </div>
   );

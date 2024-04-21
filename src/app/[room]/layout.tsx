@@ -9,11 +9,11 @@ function Navbar() {
   const user = useAuthContext();
 
   return (
-    <nav className="absolute top-0 inset-x-0 flex p-6">
-      <div className="flex-grow">
-        <span>{room?.name}</span>
+    <nav className="absolute top-0 inset-x-0 flex px-12">
+      <div className="flex-grow py-6">
+        <span className="font-semibold text-xl">{room?.name}</span>
       </div>
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-4 items-center justify-start">
         {user && (
           <div className="flex items-center">
             <img
@@ -33,7 +33,7 @@ function Navbar() {
         )}
         <button
           // onClick={() => setShowingInviteModal(true)}
-          className="border-2 border-blue-400 px-3 py-2 rounded-md text-blue-400 bg-white hover:bg-blue-100 font-bold flex"
+          className="border-2 border-blue-500 px-3 py-2 rounded-md text-blue-500 bg-white hover:bg-blue-100 font-bold flex"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

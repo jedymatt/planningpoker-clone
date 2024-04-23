@@ -3,6 +3,7 @@
 import { RoomContextProvider, useRoomContext } from '@/app/[room]/room';
 import { useAuthContext } from '@/app/auth';
 import * as Dialog from '@radix-ui/react-dialog';
+import Image from 'next/image';
 import { ReactNode, useEffect, useState } from 'react';
 import { LoadingRoomScreen } from '../_ui/LoadingRoomScreen';
 import { TextField } from '../_ui/TextField';
@@ -38,17 +39,20 @@ function Navbar() {
       <div className="flex gap-4 items-center justify-start">
         {user && user.displayName && (
           <div className="flex items-center">
-            <img
+            <Image
               src={`https://ui-avatars.com/api/?${Object.entries({
                 name: user.displayName[0],
                 color: '74b3ff',
                 background: 'ebf4ff',
                 bold: true,
+                format: 'png',
               })
                 .map(([key, value]) => `${key}=${value}`)
                 .join('&')}`}
-              className="rounded-full w-8 h-8"
+              className="rounded-full"
               alt="Avatar"
+              width={32}
+              height={32}
             />
             <span className="ml-2 font-bold">{user.displayName}</span>
           </div>

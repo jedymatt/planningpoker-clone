@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 
-export function LoadingGameScreen() {
+export function LoadingRoomScreen() {
   return (
     <div className="flex flex-col justify-center items-center h-full">
       <div className="relative flex justify-center items-center h-32 w-32">
@@ -18,7 +18,7 @@ export function LoadingGameScreen() {
         ></motion.div>
         <div className="rounded-full h-14 w-14 bg-blue-300 absolute"></div>
       </div>
-      <div className="mt-12 text-lg text-gray-500">Loading game...</div>
+      <div className="mt-12 text-lg text-gray-500">Loading room...</div>
     </div>
   );
 }

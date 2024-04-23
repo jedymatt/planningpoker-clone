@@ -5,8 +5,8 @@ import 'next/dynamic';
 import { RoomContextProvider, useRoomContext } from '@/app/[room]/room';
 import { useAuthContext } from '@/app/auth';
 import * as Dialog from '@radix-ui/react-dialog';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
-import { LoadingGameScreen } from '../_ui/LoadingGameScreen';
+import { ReactNode, useEffect, useState } from 'react';
+import { LoadingRoomScreen } from '../_ui/LoadingRoomScreen';
 import { TextField } from '../_ui/TextField';
 
 function Navbar() {
@@ -22,7 +22,9 @@ function Navbar() {
   }, []);
 
   const onCopyLink = async () => {
-    await navigator.clipboard.writeText(link!);
+    if (!link) return;
+
+    await navigator.clipboard.writeText(link);
     // todo: show toast
     console.log('copied');
 
@@ -121,7 +123,7 @@ export default function RootLayout({
         className="grid min-h-screen"
       >
         <Navbar />
-        <main>{user ? children : <LoadingGameScreen />}</main>
+        <main>{user ? children : <LoadingRoomScreen />}</main>
       </div>
     </RoomContextProvider>
   );

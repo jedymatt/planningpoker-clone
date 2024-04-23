@@ -266,7 +266,6 @@ function VotingResultSection({
 export default function MainPage() {
   const room = useRoomContext();
   const user = useAuthContext()!;
-  // const [showingInviteModal, setShowingInviteModal] = useState(false);
 
   useEffect(() => {
     const setupRoomPlayer = async () => {

@@ -10,14 +10,15 @@ import {
   updatePlayerCard,
   updateRoom,
 } from '@/lib/dbQueries';
+import { auth } from '@/lib/firebase';
 import { cn, distributeSeat } from '@/lib/utils';
 import * as Dialog from '@radix-ui/react-dialog';
+import { confetti } from '@tsparticles/confetti';
+import { updateProfile } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import { mean, round, uniq } from 'lodash';
-import { HTMLProps, useEffect, useState } from 'react';
+import { HTMLProps, useEffect } from 'react';
 import { TextField } from '../_ui/TextField';
-import { auth } from '@/lib/firebase';
-import { updateProfile } from 'firebase/auth';
 
 function StartVotingButton() {
   const room = useRoomContext()!;
@@ -187,6 +188,15 @@ function VotingResultSection({
   const highestVoteCount = Math.max(...result.map((e) => e.count));
   const numbersInVote = votes.map((e) => Number(e)).filter((e) => !isNaN(e));
   const canCalculateAverage = numbersInVote.length > 0;
+
+  confetti({
+    position: {
+      x: 50,
+      y: 100,
+    },
+    count: 20,
+    spread: 120,
+  });
 
   return (
     <div {...props} className={cn('flex', className, 'voting-result-section')}>
@@ -366,7 +376,6 @@ export default function MainPage() {
           </div>
         )}
       </div>
-
       {!user.displayName && <DisplayNameDialog />}
     </div>
   );

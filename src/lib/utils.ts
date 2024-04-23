@@ -12,16 +12,20 @@ export function distributeSeat(players: Room['players']) {
   const left: Room['players'] = [];
   const right: Room['players'] = [];
 
-  for (let index = 0; index < players.length; index++) {
-    const player = players[index];
+  players.forEach((player, index) => {
+    if (index === 0) {
+      bottom.push(player);
+      return;
+    }
+
     if (index === 6) {
       left.push(player);
-      continue;
+      return;
     }
 
     if (index === 7) {
       right.push(player);
-      continue;
+      return;
     }
 
     const addToBottom = top.length > bottom.length;
@@ -31,7 +35,7 @@ export function distributeSeat(players: Room['players']) {
     } else {
       top.push(player);
     }
-  }
+  });
 
   return { top, bottom, left, right };
 }

@@ -19,6 +19,7 @@ import { motion } from 'framer-motion';
 import { mean, round, uniq } from 'lodash';
 import { HTMLProps, useEffect } from 'react';
 import { TextField } from '../_ui/TextField';
+import { LoadingGameScreen } from '../_ui/LoadingGameScreen';
 
 function StartVotingButton() {
   const room = useRoomContext()!;
@@ -290,7 +291,7 @@ export default function MainPage() {
   }, [room]);
 
   if (!room) {
-    return <div>Room Loading...</div>;
+    return <LoadingGameScreen />;
   }
 
   const { top, bottom, left, right } = distributeSeat(room.players);

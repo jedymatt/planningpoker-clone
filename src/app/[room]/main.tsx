@@ -13,7 +13,6 @@ import {
 import { auth } from '@/lib/firebase';
 import { cn, distributeSeat } from '@/lib/utils';
 import * as Dialog from '@radix-ui/react-dialog';
-import { confetti } from '@tsparticles/confetti';
 import { updateProfile } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import { mean, round, uniq } from 'lodash';

@@ -1,4 +1,3 @@
-import { signInAnonymously, updateProfile } from 'firebase/auth';
 import {
   addDoc,
   collection,
@@ -7,8 +6,8 @@ import {
   onSnapshot,
   updateDoc,
 } from 'firebase/firestore';
-import { auth, db } from './firebase';
-import { Room, RoomCreated, RoomSchema, User, UserSchema } from './types';
+import { db } from './firebase';
+import { Room, RoomCreated, RoomSchema, User } from './types';
 import { z } from 'zod';
 
 export async function saveRoom(room: Pick<Room, 'name' | 'cards'>) {
@@ -49,14 +48,6 @@ export function updateRoom(roomId: string, room: Partial<Room>) {
   const docRef = doc(db, 'rooms', roomId);
 
   return updateDoc(docRef, roomResult);
-}
-
-export async function signInAnon(displayName: string): Promise<User> {
-  localStorage.setItem('initialDisplayName', displayName); // needed for onAuthStateChanged to work
-  const { user } = await signInAnonymously(auth);
-  await updateProfile(user, { displayName });
-
-  return UserSchema.parse(user);
 }
 
 export async function joinRoom(user: User, roomId: string) {

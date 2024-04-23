@@ -1,7 +1,5 @@
 'use client';
 
-import 'next/dynamic';
-
 import { RoomContextProvider, useRoomContext } from '@/app/[room]/room';
 import { useAuthContext } from '@/app/auth';
 import * as Dialog from '@radix-ui/react-dialog';

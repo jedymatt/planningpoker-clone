@@ -190,14 +190,15 @@ function VotingResultSection({
   const numbersInVote = votes.map((e) => Number(e)).filter((e) => !isNaN(e));
   const canCalculateAverage = numbersInVote.length > 0;
 
-  confetti({
-    position: {
-      x: 50,
-      y: 100,
-    },
-    count: 20,
-    spread: 120,
-  });
+  // FIXME: Temporarily disabled due to flickering issue
+  // confetti({
+  //   position: {
+  //     x: 50,
+  //     y: 100,
+  //   },
+  //   count: 20,
+  //   spread: 120,
+  // });
 
   return (
     <div {...props} className={cn('flex', className, 'voting-result-section')}>

@@ -1,5 +1,6 @@
 import { saveRoom } from '@/lib/dbQueries';
 import { redirect } from 'next/navigation';
+import { TextField } from './_ui/TextField';
 
 export default function Home() {
   const onSubmit = async (formData: FormData) => {
@@ -22,10 +23,10 @@ export default function Home() {
         <form action={onSubmit}>
           <h1 className="text-2xl font-bold text-center">Create a room</h1>
           <div className="mt-4">
-            <input
+            <TextField
               name="name"
               type="text"
-              placeholder="Room name"
+              label="Room name"
               className="w-full p-2 border border-gray-300 rounded-md"
             />
           </div>

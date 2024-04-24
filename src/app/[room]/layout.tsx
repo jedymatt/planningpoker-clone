@@ -2,6 +2,8 @@
 
 import { RoomContextProvider, useRoomContext } from '@/app/[room]/room';
 import { useAuthContext } from '@/app/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import * as Dialog from '@radix-ui/react-dialog';
 import Image from 'next/image';
 import { ReactNode, useEffect, useState } from 'react';
@@ -104,6 +106,15 @@ function Navbar() {
             </Dialog.Portal>
           </Dialog.Root>
         )}
+
+        <a
+          href="https://github.com/jedymatt/planningpoker-clone"
+          className="px-3 py-2 rounded-md hover:bg-gray-100 border-2 border-blue-500 text-blue-500 group hover:border-black transition-all"
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          <FontAwesomeIcon icon={faGithub} className="h-5 w-5 group-hover:text-black" />
+        </a>
       </div>
     </nav>
   );

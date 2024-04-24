@@ -1,7 +1,8 @@
 'use client';
 
-import { Card } from '@/app/[room]/card';
 import { useRoomContext } from '@/app/[room]/room';
+import { Card } from '@/app/_ui/Card';
+import { TextField } from '@/app/_ui/TextField';
 import { useAuthContext } from '@/app/auth';
 import {
   joinRoom,
@@ -17,7 +18,6 @@ import { updateProfile } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import { mean, round, uniq } from 'lodash';
 import { HTMLProps, useEffect } from 'react';
-import { TextField } from '../_ui/TextField';
 import { LoadingRoomScreen } from '../_ui/LoadingRoomScreen';
 
 function StartVotingButton() {

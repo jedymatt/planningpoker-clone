@@ -288,7 +288,7 @@ export default function MainPage() {
       }
     };
     setupRoomPlayer();
-  }, [room]);
+  }, []);
 
   if (!room) {
     return <LoadingRoomScreen />;

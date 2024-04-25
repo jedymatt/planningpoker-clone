@@ -2,7 +2,7 @@ import {useRoomContext} from '@/app/[room]/room';
 import {updateProfile} from 'firebase/auth';
 import {auth} from '@/lib/firebase';
 import {updateRoom} from '@/lib/dbQueries';
-import {TextField} from '@/app/_ui/TextField';
+import {TextField} from '@/app/_ui/textField';
 import * as Dialog from '@radix-ui/react-dialog';
 
 function DisplayNameForm() {

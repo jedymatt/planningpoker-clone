@@ -3,9 +3,9 @@
 import { useRoomContext } from '@/app/[room]/room';
 import { useAuthContext } from '@/app/auth';
 import { joinRoom } from '@/lib/dbQueries';
-import { LoadingRoomScreen } from '@/app/_ui/LoadingRoomScreen';
+import { LoadingRoomScreen } from '@/app/_ui/loadingRoomScreen';
 import { distributeSeat } from '@/lib/utils';
-import { Card } from '@/app/_ui/Card';
+import { Card } from '@/app/_ui/card';
 import { StartVotingButton } from '@/app/[room]/startVotingButton';
 import { RevealCardsButton } from '@/app/[room]/revealCardsButton';
 import { CardPicker } from '@/app/[room]/cardPicker';

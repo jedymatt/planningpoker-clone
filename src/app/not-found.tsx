@@ -1,13 +1,19 @@
 import Link from 'next/link';
 
+function Navbar() {
+  return (
+    <nav className="flex px-12 py-6">
+      <div className="flex-grow">
+        <span className="font-bold text-xl">Planning Poker Clone</span>
+      </div>
+    </nav>
+  );
+}
+
 export default function NotFound() {
   return (
     <div className="text-slate-800 min-h-screen bg-white">
-      <nav className="flex px-12 py-6">
-        <div className="flex-grow">
-          <span className="font-bold text-xl">Planning Poker Clone</span>
-        </div>
-      </nav>
+      <Navbar />
       <div className="mt-48 ml-72 mr-auto max-w-fit">
         <div className="flex flex-col justify-center">
           <span className="text-9xl font-black">404</span>

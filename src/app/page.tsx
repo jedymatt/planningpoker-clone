@@ -1,6 +1,6 @@
 import { saveRoom } from '@/lib/dbQueries';
 import { redirect } from 'next/navigation';
-import { TextField } from './_ui/TextField';
+import { TextField } from './_ui/textField';
 
 export default function Home() {
   const onSubmit = async (formData: FormData) => {

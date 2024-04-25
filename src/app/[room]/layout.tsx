@@ -7,8 +7,8 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import * as Dialog from '@radix-ui/react-dialog';
 import Image from 'next/image';
 import { ReactNode, useEffect, useState } from 'react';
-import { LoadingRoomScreen } from '../_ui/LoadingRoomScreen';
-import { TextField } from '../_ui/TextField';
+import { LoadingRoomScreen } from '../_ui/loadingRoomScreen';
+import { TextField } from '../_ui/textField';
 
 function Navbar() {
   const room = useRoomContext();

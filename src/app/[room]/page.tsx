@@ -12,6 +12,7 @@ import { CardPicker } from '@/app/[room]/cardPicker';
 import { motion } from 'framer-motion';
 import { VotingResultSection } from '@/app/[room]/votingResultSection';
 import { DisplayNameDialog } from '@/app/[room]/displayNameDialog';
+import { User } from '@/lib/types';
 
 export default function RoomPage() {
   const room = useRoomContext();
@@ -37,6 +38,15 @@ export default function RoomPage() {
 
   const { top, bottom, left, right } = distributeSeat(room.players);
 
+  const cardRenderer = (player: { userId: string; displayName: string }) => (
+    <Card
+      key={player.userId}
+      state={room.revealCards ? 'reveal' : 'hide'}
+      playerName={player.displayName}
+      value={room.votes[player.userId]}
+    />
+  );
+
   return (
     <div className="relative flex flex-col h-full">
       <div className="flex-grow flex items-center justify-center transition-all transform">
@@ -49,25 +59,11 @@ export default function RoomPage() {
         >
           <div></div>
           <div className="flex justify-around px-12 gap-x-12">
-            {top.map((player) => (
-              <Card
-                key={player.userId}
-                state={room.revealCards ? 'reveal' : 'hide'}
-                playerName={player.displayName}
-                value={room.votes[player.userId]}
-              />
-            ))}
+            {top.map((player) => cardRenderer(player))}
           </div>
           <div></div>
           <div className="flex justify-end">
-            {left.map((player) => (
-              <Card
-                key={player.userId}
-                state={room.revealCards ? 'reveal' : 'hide'}
-                playerName={player.displayName}
-                value={room.votes[player.userId]}
-              />
-            ))}
+            {left.map((player) => cardRenderer(player))}
           </div>
           <div className="flex items-center justify-center bg-blue-100 auto-cols-max rounded-3xl min-h-48 min-w-72">
             <div>
@@ -80,25 +76,11 @@ export default function RoomPage() {
             </div>
           </div>
           <div className="flex">
-            {right.map((player) => (
-              <Card
-                key={player.userId}
-                state={room.revealCards ? 'reveal' : 'hide'}
-                playerName={player.displayName}
-                value={room.votes[player.userId]}
-              />
-            ))}
+            {right.map((player) => cardRenderer(player))}
           </div>
           <div></div>
           <div className="flex justify-around px-12 gap-x-12">
-            {bottom.map((player) => (
-              <Card
-                key={player.userId}
-                state={room.revealCards ? 'reveal' : 'hide'}
-                playerName={player.displayName}
-                value={room.votes[player.userId]}
-              />
-            ))}
+            {bottom.map((player) => cardRenderer(player))}
           </div>
           <div></div>
         </div>

@@ -17,7 +17,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { updateProfile } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import { mean, round, uniq } from 'lodash';
-import { HTMLProps, useEffect } from 'react';
+import { HTMLProps } from 'react';
 import { LoadingRoomScreen } from '../_ui/LoadingRoomScreen';
 
 function StartVotingButton() {
@@ -268,27 +268,19 @@ export default function MainPage() {
   const room = useRoomContext();
   const user = useAuthContext()!;
 
-  useEffect(() => {
-    const setupRoomPlayer = async () => {
-      // original intention: should be able to join even when displayName is null
-      // not possible for now because we don't have a presence detection implemented
-      // that can cleanup players that leaves
-      if (
-        user.displayName &&
-        room &&
-        !room.players.some((pl) => pl.userId === user.uid)
-      ) {
-        await joinRoom(
-          {
-            uid: user.uid,
-            displayName: user.displayName,
-          },
-          room.id,
-        );
-      }
-    };
-    setupRoomPlayer();
-  }, []);
+  if (
+    user.displayName &&
+    room &&
+    !room.players.some((pl) => pl.userId === user.uid)
+  ) {
+    joinRoom(
+      {
+        uid: user.uid,
+        displayName: user.displayName,
+      },
+      room.id,
+    ).then(() => console.log('joined'));
+  }
 
   if (!room) {
     return <LoadingRoomScreen />;

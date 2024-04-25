@@ -50,9 +50,9 @@ export function DisplayNameDialog() {
     return (
         <Dialog.Root open={true}>
             <Dialog.Portal>
-                <Dialog.Overlay className="bg-cyan-950/50 fixed inset-0"/>
+                <Dialog.Overlay className="bg-cyan-950/50 fixed inset-0 z-[1]"/>
                 <Dialog.Content
-                    className="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none border px-8 py-16">
+                    className="z-[2] fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none border px-8 py-16">
                     <DisplayNameForm/>
                 </Dialog.Content>
             </Dialog.Portal>

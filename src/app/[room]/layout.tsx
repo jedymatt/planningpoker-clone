@@ -9,10 +9,13 @@ import Image from 'next/image';
 import { ReactNode, useEffect, useState } from 'react';
 import { LoadingRoomScreen } from '../_ui/loadingRoomScreen';
 import { TextField } from '../_ui/textField';
+import { RoomCreated } from '@/lib/types';
+import { getRoomById } from '@/lib/dbQueries';
+import { notFound } from 'next/navigation';
+import { User } from 'firebase/auth';
 
-function Navbar() {
+function Navbar({ user }: { user?: User | null }) {
   const room = useRoomContext();
-  const user = useAuthContext();
   const [showInvite, setShowInvite] = useState(false);
   const [link, setLink] = useState<string | null>(null);
 
@@ -113,7 +116,10 @@ function Navbar() {
           rel="noreferrer noopener"
           target="_blank"
         >
-          <FontAwesomeIcon icon={faGithub} className="h-5 w-5 group-hover:text-black" />
+          <FontAwesomeIcon
+            icon={faGithub}
+            className="h-5 w-5 group-hover:text-black"
+          />
         </a>
       </div>
     </nav>
@@ -128,15 +134,44 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   const user = useAuthContext();
+  const [room, setRoom] = useState<RoomCreated | null>();
+  const [loading, setLoading] = useState(true);
 
-  return (
-    <RoomContextProvider roomId={params.room}>
+  useEffect(() => {
+    const fetchRoom = async () => {
+      const data = await getRoomById(params.room);
+      setRoom(data);
+      setLoading(false);
+    };
+    fetchRoom();
+  }, [params.room]);
+
+  if (loading) {
+    return (
       <div
         style={{ gridTemplateRows: 'auto 1fr' }}
         className="grid min-h-screen"
       >
         <Navbar />
-        <main>{user ? children : <LoadingRoomScreen />}</main>
+        <main>
+          <LoadingRoomScreen />
+        </main>
+      </div>
+    );
+  }
+
+  if (!room) {
+    notFound();
+  }
+
+  return (
+    <RoomContextProvider roomId={params.room} initialValue={room}>
+      <div
+        style={{ gridTemplateRows: 'auto 1fr' }}
+        className="grid min-h-screen"
+      >
+        <Navbar user={user} />
+        <main>{children}</main>
       </div>
     </RoomContextProvider>
   );

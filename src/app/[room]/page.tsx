@@ -3,7 +3,6 @@
 import { useRoomContext } from '@/app/[room]/room';
 import { useAuthContext } from '@/app/auth';
 import { joinRoom } from '@/lib/dbQueries';
-import { LoadingRoomScreen } from '@/app/_ui/loadingRoomScreen';
 import { distributeSeat } from '@/lib/utils';
 import { Card } from '@/app/_ui/card';
 import { StartVotingButton } from '@/app/[room]/startVotingButton';
@@ -12,10 +11,9 @@ import { CardPicker } from '@/app/[room]/cardPicker';
 import { motion } from 'framer-motion';
 import { VotingResultSection } from '@/app/[room]/votingResultSection';
 import { DisplayNameDialog } from '@/app/[room]/displayNameDialog';
-import { User } from '@/lib/types';
 
 export default function RoomPage() {
-  const room = useRoomContext();
+  const room = useRoomContext()!;
   const user = useAuthContext()!;
 
   if (
@@ -30,10 +28,6 @@ export default function RoomPage() {
       },
       room.id,
     ).then(() => console.log('joined'));
-  }
-
-  if (!room) {
-    return <LoadingRoomScreen />;
   }
 
   const { top, bottom, left, right } = distributeSeat(room.players);

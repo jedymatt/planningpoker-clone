@@ -7,7 +7,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { Room, RoomCreated, RoomSchema, User } from './types';
+import { Room, RoomSchema, User } from './types';
 import { z } from 'zod';
 
 export async function saveRoom(room: Pick<Room, 'name' | 'cards'>) {
@@ -17,7 +17,7 @@ export async function saveRoom(room: Pick<Room, 'name' | 'cards'>) {
   return docRef.id;
 }
 
-export async function getRoomById(roomId: string): Promise<RoomCreated | null> {
+export async function getRoomById(roomId: string): Promise<Room | null> {
   const docRef = doc(db, 'rooms', roomId);
   const docSnap = await getDoc(docRef);
 
@@ -30,10 +30,7 @@ export async function getRoomById(roomId: string): Promise<RoomCreated | null> {
   return { ...data, id: docSnap.id };
 }
 
-export function onRoomChanged(
-  roomId: string,
-  callback: (room: RoomCreated) => void,
-) {
+export function onRoomChanged(roomId: string, callback: (room: Room) => void) {
   const docRef = doc(db, 'rooms', roomId);
   return onSnapshot(docRef, (docSnap) => {
     if (docSnap.exists()) {
@@ -43,7 +40,7 @@ export function onRoomChanged(
   });
 }
 
-export function updateRoom(roomId: string, room: Partial<Room>) {
+export function updateRoom(roomId: string, room: Partial<Omit<Room, 'id'>>) {
   const roomResult = RoomSchema.partial().parse(room);
   const docRef = doc(db, 'rooms', roomId);
 

@@ -9,10 +9,10 @@ import Image from 'next/image';
 import { ReactNode, useEffect, useState } from 'react';
 import { LoadingRoomScreen } from '../_ui/loadingRoomScreen';
 import { TextField } from '../_ui/textField';
-import { RoomCreated } from '@/lib/types';
 import { getRoomById } from '@/lib/dbQueries';
 import { notFound } from 'next/navigation';
 import { User } from 'firebase/auth';
+import { Room } from '@/lib/types';
 
 function Navbar({ user }: { user?: User | null }) {
   const room = useRoomContext();
@@ -134,7 +134,7 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   const user = useAuthContext();
-  const [room, setRoom] = useState<RoomCreated | null>();
+  const [room, setRoom] = useState<Room | null>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

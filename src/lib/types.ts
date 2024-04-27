@@ -8,6 +8,7 @@ export const UserSchema = z.object({
 export type User = z.infer<typeof UserSchema>;
 
 export const RoomSchema = z.object({
+  id: z.string(),
   name: z.string(),
   cards: z.string().array(),
   players: z
@@ -28,9 +29,4 @@ export const RoomSchema = z.object({
   revealCards: z.boolean().default(false),
 });
 
-export const RoomCreatedSchema = RoomSchema.extend({
-  id: z.string(),
-});
-
 export type Room = z.infer<typeof RoomSchema>;
-export type RoomCreated = z.infer<typeof RoomCreatedSchema>;

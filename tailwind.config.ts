@@ -1,5 +1,5 @@
 import type { Config } from 'tailwindcss';
-import forms from '@tailwindcss/forms'
+import forms from '@tailwindcss/forms';
 
 const config: Config = {
   content: [

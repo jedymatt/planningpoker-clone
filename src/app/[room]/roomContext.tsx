@@ -1,5 +1,7 @@
 'use client';
 
+import { onRoomChanged } from '@/lib/dbQueries';
+import { Room } from '@/lib/schemas';
 import {
   createContext,
   PropsWithChildren,
@@ -7,8 +9,6 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Room } from '@/lib/types';
-import { onRoomChanged } from '@/lib/dbQueries';
 
 const RoomContext = createContext<Room | null>(null);
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, signInAnonymously, User } from 'firebase/auth';
 import {
   createContext,
   PropsWithChildren,
@@ -7,8 +9,6 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { onAuthStateChanged, signInAnonymously, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 
 const AuthContext = createContext<User | null>(null);
 

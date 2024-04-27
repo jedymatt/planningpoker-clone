@@ -1,18 +1,17 @@
 'use client';
 
-import { RoomContextProvider, useRoomContext } from '@/app/[room]/room';
-import { useAuthContext } from '@/app/auth';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { RoomContextProvider, useRoomContext } from '@/app/[room]/roomContext';
+import { getRoomById } from '@/lib/dbQueries';
+import { Room, User } from '@/lib/schemas';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as Dialog from '@radix-ui/react-dialog';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
 import { LoadingRoomScreen } from '../_ui/loadingRoomScreen';
 import { TextField } from '../_ui/textField';
-import { getRoomById } from '@/lib/dbQueries';
-import { notFound } from 'next/navigation';
-import { User } from 'firebase/auth';
-import { Room } from '@/lib/types';
+import { useUserContext } from '../userContext';
 
 function Navbar({ user }: { user?: User | null }) {
   const room = useRoomContext();
@@ -133,7 +132,7 @@ export default function RootLayout({
   params: { room: string };
   children: ReactNode;
 }>) {
-  const user = useAuthContext();
+  const user = useUserContext();
   const [room, setRoom] = useState<Room | null>();
   const [loading, setLoading] = useState(true);
 
@@ -143,36 +142,31 @@ export default function RootLayout({
       setRoom(data);
       setLoading(false);
     };
+
     fetchRoom();
   }, [params.room]);
 
-  if (loading) {
-    return (
-      <div
-        style={{ gridTemplateRows: 'auto 1fr' }}
-        className="grid min-h-screen"
-      >
-        <Navbar />
-        <main>
-          <LoadingRoomScreen />
-        </main>
-      </div>
-    );
-  }
-
-  if (!room) {
+  if (!loading && !room) {
     notFound();
   }
 
   return (
-    <RoomContextProvider roomId={params.room} initialValue={room}>
-      <div
-        style={{ gridTemplateRows: 'auto 1fr' }}
-        className="grid min-h-screen"
-      >
-        <Navbar user={user} />
-        <main>{children}</main>
-      </div>
-    </RoomContextProvider>
+    <div style={{ gridTemplateRows: 'auto 1fr' }} className="grid min-h-screen">
+      {loading && (
+        <>
+          <Navbar />
+          <main>
+            <LoadingRoomScreen />
+          </main>
+        </>
+      )}
+
+      {room && (
+        <RoomContextProvider roomId={params.room} initialValue={room}>
+          <Navbar user={user} />
+          <main>{user ? children : <LoadingRoomScreen />}</main>
+        </RoomContextProvider>
+      )}
+    </div>
   );
 }

@@ -1,29 +1,29 @@
 'use client';
 
-import { useRoomContext } from '@/app/[room]/room';
-import { useAuthContext } from '@/app/auth';
+import { CardPicker } from '@/app/[room]/cardPicker';
+import { DisplayNameDialog } from '@/app/[room]/displayNameDialog';
+import { RevealCardsButton } from '@/app/[room]/revealCardsButton';
+import { useRoomContext } from '@/app/[room]/roomContext';
+import { StartVotingButton } from '@/app/[room]/startVotingButton';
+import { VotingResultSection } from '@/app/[room]/votingResultSection';
+import { Card } from '@/app/_ui/card';
 import { joinRoom } from '@/lib/dbQueries';
 import { distributeSeat } from '@/lib/utils';
-import { Card } from '@/app/_ui/card';
-import { StartVotingButton } from '@/app/[room]/startVotingButton';
-import { RevealCardsButton } from '@/app/[room]/revealCardsButton';
-import { CardPicker } from '@/app/[room]/cardPicker';
 import { motion } from 'framer-motion';
-import { VotingResultSection } from '@/app/[room]/votingResultSection';
-import { DisplayNameDialog } from '@/app/[room]/displayNameDialog';
+import { useUserContext } from '../userContext';
 
 export default function RoomPage() {
   const room = useRoomContext()!;
-  const user = useAuthContext()!;
+  const user = useUserContext()!;
 
   if (
     user.displayName &&
     room &&
-    !room.players.some((pl) => pl.userId === user.uid)
+    !room.players.some((pl) => pl.userId === user.id)
   ) {
     joinRoom(
       {
-        uid: user.uid,
+        id: user.id,
         displayName: user.displayName,
       },
       room.id,

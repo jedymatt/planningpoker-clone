@@ -1,4 +1,4 @@
-import {useRoomContext} from '@/app/[room]/room';
+import {useRoomContext} from '@/app/[room]/roomContext';
 import {startVoting} from '@/lib/dbQueries';
 
 export function StartVotingButton() {

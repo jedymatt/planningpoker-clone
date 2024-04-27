@@ -1,6 +1,6 @@
+import { Room } from '@/lib/schemas';
+import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { type ClassValue, clsx } from 'clsx';
-import { Room } from '@/lib/types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

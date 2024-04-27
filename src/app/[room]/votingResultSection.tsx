@@ -1,5 +1,5 @@
 import {HTMLProps} from 'react';
-import {useRoomContext} from '@/app/[room]/room';
+import {useRoomContext} from '@/app/[room]/roomContext';
 import {mean, round, uniq} from 'lodash';
 import {cn} from '@/lib/utils';
 

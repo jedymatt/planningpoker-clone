@@ -25,17 +25,15 @@ export async function getRoomById(roomId: string): Promise<Room | null> {
     return null;
   }
 
-  const data = RoomSchema.parse(docSnap.data());
-
-  return { ...data, id: docSnap.id };
+  return RoomSchema.parse({...docSnap.data(), id: docRef.id});
 }
 
 export function onRoomChanged(roomId: string, callback: (room: Room) => void) {
   const docRef = doc(db, 'rooms', roomId);
   return onSnapshot(docRef, (docSnap) => {
     if (docSnap.exists()) {
-      const data = RoomSchema.parse(docSnap.data());
-      callback({ ...data, id: docSnap.id });
+      const data = RoomSchema.parse({...docSnap.data(), id: docSnap.id});
+      callback(data);
     }
   });
 }

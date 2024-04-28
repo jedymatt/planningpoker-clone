@@ -76,6 +76,22 @@ export async function joinRoom(
   });
 }
 
+export async function kickPlayerFromRoom(userId: string, roomId: string) {
+  const docRef = doc(db, 'rooms', roomId);
+  const docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) {
+    return;
+  }
+
+  const PlayerOnlySchema = RoomSchema.pick({ players: true });
+  const { players } = PlayerOnlySchema.parse(docSnap.data());
+
+  const newPlayers = players.filter((pl) => pl.userId !== userId);
+
+  await updateDoc(docRef, <z.infer<typeof PlayerOnlySchema>>{ players: newPlayers });
+}
+
 export async function updatePlayerCard(
   roomId: string,
   playerId: string,

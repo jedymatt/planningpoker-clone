@@ -22,7 +22,7 @@ export const RoomContextProvider = ({
   const [room, setRoom] = useState<Room | null>(initialValue ?? null);
 
   useEffect(() => {
-    const unsubscribe = onRoomChanged(roomId, (user) => setRoom(user));
+    const unsubscribe = onRoomChanged(roomId, (room) => setRoom(room));
     return () => unsubscribe();
   }, []);
 

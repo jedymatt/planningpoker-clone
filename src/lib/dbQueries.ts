@@ -143,7 +143,6 @@ export async function createUser(user: Omit<User, 'id'>) {
     return null;
   }
 
-  console.log(user);
   const docRef = await addDoc(collection(db, 'users'), user);
 
   return docRef.id;

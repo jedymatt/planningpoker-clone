@@ -15,10 +15,8 @@ export function UserWrapper({ children }: PropsWithChildren) {
   useEffect(() => {
     const initUser = async () => {
       if (!authUser) return;
-      console.log('passed !authUser');
 
       const user = await getCurrentUser();
-      console.log(user);
       if (user) {
         setUser(user);
         return;

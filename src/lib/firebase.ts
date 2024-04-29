@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getDatabase } from 'firebase/database';
 import { getFirestore } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -9,6 +10,8 @@ import { getFirestore } from 'firebase/firestore';
 const firebaseConfig = {
   apiKey: 'AIzaSyDfZYI7o9a0D5a3OlG-n2X6gxngnVll4ks',
   authDomain: 'planning-poker-clone-fe224.firebaseapp.com',
+  databaseURL:
+    'https://planning-poker-clone-fe224-default-rtdb.asia-southeast1.firebasedatabase.app',
   projectId: 'planning-poker-clone-fe224',
   storageBucket: 'planning-poker-clone-fe224.appspot.com',
   messagingSenderId: '820267698753',
@@ -19,3 +22,4 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const rtdb = getDatabase(app);

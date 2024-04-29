@@ -80,6 +80,29 @@ export async function joinRoom(
   });
 }
 
+export async function kickPlayerFromRoom(userId: string, roomId: string) {
+  const docRef = doc(db, 'rooms', roomId);
+  const docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) {
+    return;
+  }
+
+  const PlayerOnlySchema = RoomSchema.pick({ players: true, votes: true });
+  const { players, votes } = PlayerOnlySchema.parse(docSnap.data());
+
+  const newPlayers = players.filter((pl) => pl.userId !== userId);
+
+  const newVotes = Object.fromEntries(
+    Object.entries(votes).filter(([key]) => key !== userId),
+  );
+
+  await updateDoc(docRef, <z.infer<typeof PlayerOnlySchema>>{
+    players: newPlayers,
+    votes: newVotes,
+  });
+}
+
 export async function updatePlayerCard(
   roomId: string,
   playerId: string,
@@ -134,6 +157,17 @@ export async function getUserByUid(uid: string): Promise<User | null> {
   return UserSchema.parse({ ...docSnap.data(), id: docSnap.id });
 }
 
+// export async function getUserById(id: string): Promise<User | null> {
+//   const docRef = doc(db, 'users', id);
+//   const docSnap = await getDoc(docRef);
+
+//   if (!docSnap.exists()) {
+//     return null;
+//   }
+
+//   return UserSchema.parse({ ...docSnap.data(), id: docSnap.id });
+// }
+
 export async function getCurrentUser() {
   if (!auth.currentUser) return null;
 
@@ -169,4 +203,37 @@ export async function updateUser(id: string, data: Partial<Omit<User, 'id'>>) {
   const docRef = doc(db, 'users', id);
 
   await updateDoc(docRef, data);
+}
+
+// export async function getUsersFromRoom(roomId: string): Promise<User[]> {
+//   const docRef = doc(db, 'rooms', roomId);
+//   const docSnap = await getDoc(docRef);
+
+//   if (!docSnap.exists()) {
+//     return [];
+//   }
+
+//   const PlayerOnlySchema = RoomSchema.pick({ players: true });
+//   const { players } = PlayerOnlySchema.parse(docSnap.data());
+
+//   const users = await Promise.all(
+//     players
+//       .map((e) => e.userId)
+//       .map(async (id) => {
+//         const snap = await getDoc(doc(db, 'users', id));
+
+//         if (snap.exists()) {
+//           return UserSchema.parse({ ...snap.data(), id: snap.id });
+//         }
+//         return null;
+//       }),
+//   );
+
+//   return users.filter((u): u is User => u !== null);
+// }
+
+export async function setPlayersInRoom(roomId: string, players: Room['players']) {
+  const docRef = doc(db, 'rooms', roomId);
+
+  await updateDoc(docRef, { players });
 }

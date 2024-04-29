@@ -80,6 +80,29 @@ export async function joinRoom(
   });
 }
 
+export async function kickPlayerFromRoom(userId: string, roomId: string) {
+  const docRef = doc(db, 'rooms', roomId);
+  const docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) {
+    return;
+  }
+
+  const PlayerOnlySchema = RoomSchema.pick({ players: true, votes: true });
+  const { players, votes } = PlayerOnlySchema.parse(docSnap.data());
+
+  const newPlayers = players.filter((pl) => pl.userId !== userId);
+
+  const newVotes = Object.fromEntries(
+    Object.entries(votes).filter(([key]) => key !== userId),
+  );
+
+  await updateDoc(docRef, <z.infer<typeof PlayerOnlySchema>>{
+    players: newPlayers,
+    votes: newVotes,
+  });
+}
+
 export async function updatePlayerCard(
   roomId: string,
   playerId: string,

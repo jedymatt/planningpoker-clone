@@ -88,12 +88,19 @@ export async function kickPlayerFromRoom(userId: string, roomId: string) {
     return;
   }
 
-  const PlayerOnlySchema = RoomSchema.pick({ players: true });
-  const { players } = PlayerOnlySchema.parse(docSnap.data());
+  const PlayerOnlySchema = RoomSchema.pick({ players: true, votes: true });
+  const { players, votes } = PlayerOnlySchema.parse(docSnap.data());
 
   const newPlayers = players.filter((pl) => pl.userId !== userId);
 
-  await updateDoc(docRef, <z.infer<typeof PlayerOnlySchema>>{ players: newPlayers });
+  const newVotes = Object.fromEntries(
+    Object.entries(votes).filter(([key]) => key !== userId),
+  );
+
+  await updateDoc(docRef, <z.infer<typeof PlayerOnlySchema>>{
+    players: newPlayers,
+    votes: newVotes,
+  });
 }
 
 export async function updatePlayerCard(

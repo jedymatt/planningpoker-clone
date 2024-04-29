@@ -24,7 +24,7 @@ export default function NotFound() {
             Sorry, we can’t find what you are looking for.
           </p>
           <Link
-            href="/public"
+            href="/"
             className="mt-10 py-3 text-white bg-blue-500 hover:bg-blue-400 rounded-lg font-bold text-center tracking-wider"
           >
             Go Back

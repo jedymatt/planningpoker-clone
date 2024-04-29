@@ -36,7 +36,11 @@ export default function RoomPage() {
 
   const CardRenderer = ({ player }: { player: Room['players'][number] }) => {
     const [hovered, setHovered] = useState(false);
-    const isOwnCard = player.userId === user.id;
+    const isRoomOwner = user.id === room.ownerId;
+    const isCardOwner = user.id === player.userId;
+    const isBlankCard = room.votes[player.userId] == null;
+
+    const showKickButton = isRoomOwner && !isCardOwner && hovered;
 
     return (
       <div className="relative">
@@ -46,12 +50,7 @@ export default function RoomPage() {
           onMouseLeave={() => setHovered(false)}
         >
           <Card
-            className={cn(
-              room.votes[player.userId] == null &&
-                !isOwnCard &&
-                hovered &&
-                'bg-gray-300',
-            )}
+            className={cn(isBlankCard && showKickButton && 'bg-gray-300')}
             state={room.revealCards ? 'reveal' : 'hide'}
             value={room.votes[player.userId]}
           />
@@ -59,16 +58,16 @@ export default function RoomPage() {
           <div className="mt-2 font-bold text-center">{player.displayName}</div>
         </div>
 
-        {!isOwnCard && hovered && (
-          <div
-            className="flex absolute top-0 left-0 translate-x-1/2 -translate-y-full justify-center h-min w-min"
-            onMouseEnter={() => setHovered(true)}
-          >
+        {showKickButton && (
+          <div className="flex absolute top-0 left-0 -translate-y-full justify-center h-min w-full">
             <div
-              className="flex justify-center hover:opacity-100 pb-2 "
+              className="flex justify-center hover:opacity-100 pb-2"
+              onMouseEnter={() => setHovered(true)}
               onMouseLeave={() => setHovered(false)}
               onClick={async () => {
-                await kickPlayerFromRoom(player.userId, room.id);
+                if (user.id === room.ownerId) {
+                  await kickPlayerFromRoom(player.userId, room.id);
+                }
               }}
             >
               <button className="rounded-full bg-red-500 h-12  w-12 flex justify-center items-center">

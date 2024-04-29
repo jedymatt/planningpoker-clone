@@ -13,8 +13,12 @@ import { z } from 'zod';
 import { auth, db } from './firebase';
 import { Room, RoomSchema, User, UserSchema } from './schemas';
 
-export async function saveRoom(room: Pick<Room, 'name' | 'cards'>) {
-  const roomResult = RoomSchema.pick({ name: true, cards: true }).parse(room);
+export async function saveRoom(room: Pick<Room, 'name' | 'cards' | 'ownerId'>) {
+  const roomResult = RoomSchema.pick({
+    name: true,
+    cards: true,
+    ownerId: true,
+  }).parse(room);
   const docRef = await addDoc(collection(db, 'rooms'), roomResult);
 
   return docRef.id;

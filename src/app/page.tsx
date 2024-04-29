@@ -1,30 +1,50 @@
+'use client';
+
 import { saveRoom } from '@/lib/dbQueries';
-import { redirect } from 'next/navigation';
 import { TextField } from './_ui/textField';
+import { useUserContext } from '@/app/userContext';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useRouter } from 'next/navigation';
+
+const CreateRoomFormSchema = z.object({
+  name: z.string().min(1),
+  votingSystem: z.string().min(1),
+});
+
+type CreateRoomForm = z.infer<typeof CreateRoomFormSchema>;
 
 export default function Home() {
-  const onSubmit = async (formData: FormData) => {
-    'use server';
+  const user = useUserContext();
+  const {
+    handleSubmit, //
+    formState,
+    register,
+  } = useForm<CreateRoomForm>({
+    defaultValues: { votingSystem: '1,2,3,5,8,?' },
+  });
+  const router = useRouter();
 
-    const name = formData.get('name') as string;
-    const votingSystem = formData.get('votingSystem') as string;
+  if (!user) return null;
 
+  const onSubmit = async (data: CreateRoomForm) => {
     const roomId = await saveRoom({
-      name,
-      cards: votingSystem.split(',').map((card) => card.trim()),
+      name: data.name,
+      cards: data.votingSystem.split(',').map((card) => card.trim()),
+      ownerId: user.id,
     });
 
-    redirect(`/${roomId}`);
+    return router.push(`/${roomId}`);
   };
 
   return (
     <main className="flex items-center justify-center min-h-screen">
       <div className="w-full max-w-lg">
-        <form action={onSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <h1 className="text-2xl font-bold text-center">Create a room</h1>
           <div className="mt-4">
             <TextField
-              name="name"
+              {...register('name', { required: true, minLength: 1 })}
               type="text"
               label="Room name"
               className="w-full p-2 border border-gray-300 rounded-md"
@@ -32,7 +52,7 @@ export default function Home() {
           </div>
           <div className="mt-4">
             <select
-              name="votingSystem"
+              {...register('votingSystem', { required: true })}
               className="w-full p-2 border border-gray-300 rounded-md"
             >
               <option value="1,2,3,5,8,?">Fibonacci (1, 2, 3, 5, 8, ?)</option>
@@ -40,7 +60,11 @@ export default function Home() {
           </div>
 
           <div className="mt-4">
-            <button className="w-full p-2 text-white bg-blue-500 rounded-md disabled:bg-gray-300">
+            <button
+              type="submit"
+              className="w-full p-2 text-white bg-blue-500 rounded-md disabled:bg-gray-300"
+              disabled={formState.isSubmitting}
+            >
               Create room
             </button>
           </div>

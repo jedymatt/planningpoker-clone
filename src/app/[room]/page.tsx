@@ -11,25 +11,20 @@ import { joinRoom, kickPlayerFromRoom } from '@/lib/dbQueries';
 import { cn, distributeSeat } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useUserContext } from '../userContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { listenToUserPresenceInRoom } from '@/lib/userPresence';
 import { Room } from '@/lib/schemas';
 
 export default function RoomPage() {
   const room = useRoomContext()!;
   const user = useUserContext()!;
 
-  if (
-    user.displayName &&
-    room &&
-    !room.players.some((pl) => pl.userId === user.id)
-  ) {
-    joinRoom(
-      {
-        id: user.id,
-        displayName: user.displayName,
-      },
-      room.id,
-    ).then(() => console.log('joined'));
+  useEffect(() => {
+    return listenToUserPresenceInRoom(room.id, user.id);
+  }, []);
+
+  if (user.displayName) {
+    joinRoom(user, room.id);
   }
 
   const { top, bottom, left, right } = distributeSeat(room.players);

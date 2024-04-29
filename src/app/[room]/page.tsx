@@ -121,8 +121,10 @@ export default function RoomPage() {
               {!room.revealCards &&
                 Object.values(room.votes).filter((e) => e !== null).length >
                   0 && <RevealCardsButton />}
-              {Object.values(room.votes).filter((e) => e !== null).length ===
-                0 && 'Pick your cards!'}
+              {!room.revealCards &&
+                Object.values(room.votes).filter((e) => e !== null).length ===
+                  0 &&
+                'Pick your cards!'}
             </div>
           </div>
           <div className="flex">

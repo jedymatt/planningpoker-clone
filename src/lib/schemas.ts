@@ -29,6 +29,7 @@ export const RoomSchema = z.object({
     .optional()
     .default({}),
   revealCards: z.boolean().default(false),
+  ownerId: z.string(),
 });
 
 export type Room = z.infer<typeof RoomSchema>;

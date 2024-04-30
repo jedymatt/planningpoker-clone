@@ -16,7 +16,7 @@ export const RoomSchema = z.object({
   players: z
     .object({
       userId: z.string(),
-      displayName: z.string(),
+      displayName: z.string().nullable(),
     })
     .array()
     .optional()

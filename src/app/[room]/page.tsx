@@ -7,7 +7,7 @@ import { useRoomContext } from '@/app/[room]/roomContext';
 import { StartVotingButton } from '@/app/[room]/startVotingButton';
 import { VotingResultSection } from '@/app/[room]/votingResultSection';
 import { Card } from '@/app/_ui/card';
-import { joinRoom, kickPlayerFromRoom } from '@/lib/dbQueries';
+import { kickPlayerFromRoom } from '@/lib/dbQueries';
 import { cn, distributeSeat } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useUserContext } from '../userContext';
@@ -20,12 +20,8 @@ export default function RoomPage() {
   const user = useUserContext()!;
 
   useEffect(() => {
-    return listenToUserPresenceInRoom(room.id, user.id);
-  }, []);
-
-  if (user.displayName) {
-    joinRoom(user, room.id);
-  }
+    return listenToUserPresenceInRoom(room.id, user.id, user.displayName);
+  }, [room, user]);
 
   const { top, bottom, left, right } = distributeSeat(room.players);
 
@@ -94,7 +90,7 @@ export default function RoomPage() {
         <div
           style={{
             gridTemplateColumns: '8rem 1fr 8rem',
-            gridTemplateRows: '8rem 1fr 8rem',
+            gridTemplateRows: '8rem 1fr 8rem'
           }}
           className="grid gap-4"
         >
@@ -115,10 +111,10 @@ export default function RoomPage() {
               {room.revealCards && <StartVotingButton />}
               {!room.revealCards &&
                 Object.values(room.votes).filter((e) => e !== null).length >
-                  0 && <RevealCardsButton />}
+                0 && <RevealCardsButton />}
               {!room.revealCards &&
                 Object.values(room.votes).filter((e) => e !== null).length ===
-                  0 &&
+                0 &&
                 'Pick your cards!'}
             </div>
           </div>

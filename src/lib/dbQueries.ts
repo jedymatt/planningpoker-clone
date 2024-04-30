@@ -7,17 +7,18 @@ import {
   onSnapshot,
   query,
   updateDoc,
-  where,
+  where
 } from 'firebase/firestore';
 import { z } from 'zod';
 import { auth, db } from './firebase';
 import { Room, RoomSchema, User, UserSchema } from './schemas';
+import { clone } from 'lodash';
 
 export async function saveRoom(room: Pick<Room, 'name' | 'cards' | 'ownerId'>) {
   const roomResult = RoomSchema.pick({
     name: true,
     cards: true,
-    ownerId: true,
+    ownerId: true
   }).parse(room);
   const docRef = await addDoc(collection(db, 'rooms'), roomResult);
 
@@ -45,39 +46,36 @@ export function onRoomChanged(roomId: string, callback: (room: Room) => void) {
   });
 }
 
-export function updateRoom(roomId: string, room: Partial<Omit<Room, 'id'>>) {
-  const roomResult = RoomSchema.partial().parse(room);
-  const docRef = doc(db, 'rooms', roomId);
-
-  return updateDoc(docRef, roomResult);
-}
-
 export async function joinRoom(
   user: Pick<User, 'id' | 'displayName'>,
-  roomId: string,
+  roomId: string
 ) {
   const docRef = doc(db, 'rooms', roomId);
   const docSnap = await getDoc(docRef);
 
   if (!docSnap.exists()) {
-    return null;
+    return;
   }
   const PlayerOnlySchema = RoomSchema.pick({ players: true });
   const { players } = PlayerOnlySchema.parse(docSnap.data());
+  const playerIndex = players.findIndex((player) => player.userId === user.id);
 
-  if (players.some((pl) => pl.userId === user.id)) {
+  if (playerIndex !== -1 && players[playerIndex].displayName === user.displayName) {
     return;
   }
 
+  if (playerIndex === -1) {
+    players.push({ userId: user.id, displayName: user.displayName });
+  } else {
+    players[playerIndex].displayName = user.displayName;
+  }
+
+
   await updateDoc(docRef, <z.infer<typeof PlayerOnlySchema>>{
-    players: [
-      ...players,
-      {
-        userId: user.id,
-        displayName: user.displayName,
-      },
-    ],
+    players
   });
+
+
 }
 
 export async function kickPlayerFromRoom(userId: string, roomId: string) {
@@ -94,19 +92,19 @@ export async function kickPlayerFromRoom(userId: string, roomId: string) {
   const newPlayers = players.filter((pl) => pl.userId !== userId);
 
   const newVotes = Object.fromEntries(
-    Object.entries(votes).filter(([key]) => key !== userId),
+    Object.entries(votes).filter(([key]) => key !== userId)
   );
 
   await updateDoc(docRef, <z.infer<typeof PlayerOnlySchema>>{
     players: newPlayers,
-    votes: newVotes,
+    votes: newVotes
   });
 }
 
 export async function updatePlayerCard(
   roomId: string,
   playerId: string,
-  card: string | null,
+  card: string | null
 ) {
   const docRef = doc(db, 'rooms', roomId);
   const docSnap = await getDoc(docRef);
@@ -116,7 +114,7 @@ export async function updatePlayerCard(
   }
 
   await updateDoc(docRef, {
-    [`votes.${playerId}`]: card,
+    [`votes.${playerId}`]: card
   });
 }
 
@@ -129,7 +127,7 @@ export async function revealCards(roomId: string) {
   }
 
   await updateDoc(docRef, {
-    revealCards: true,
+    revealCards: true
   });
 }
 

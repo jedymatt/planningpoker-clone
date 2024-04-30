@@ -23,6 +23,8 @@ export default function RoomPage() {
     return listenToUserPresenceInRoom(room.id, user.id, user.displayName);
   }, [room, user]);
 
+  const isPlayer = !!room.players.find((player) => player.userId === user.id);
+
   const { top, bottom, left, right } = distributeSeat(room.players);
 
   const CardRenderer = ({ player }: { player: Room['players'][number] }) => {
@@ -134,7 +136,7 @@ export default function RoomPage() {
       </div>
 
       <div className={'flex justify-center items-center py-4'}>
-        {!room.revealCards && <CardPicker />}
+        {isPlayer && !room.revealCards && <CardPicker />}
         {room.revealCards && (
           <div className="overflow-clip flex justify-center items-center bg-stone-50">
             <motion.div

@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "planning-poker-clone-fe224",
+    "dev": "planning-poker-clone-dev"
+  }
+}

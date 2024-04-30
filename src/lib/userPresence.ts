@@ -2,7 +2,11 @@ import { get, onDisconnect, onValue, ref, set } from 'firebase/database';
 import { rtdb } from './firebase';
 import { joinRoom } from '@/lib/dbQueries';
 
-export function listenToUserPresenceInRoom(roomId: string, userId: string, displayName: string | null) {
+export function listenToUserPresenceInRoom(
+  roomId: string,
+  userId: string,
+  displayName: string | null,
+) {
   const userPresenceRef = ref(rtdb, `rooms/${roomId}/users/${userId}`);
   const connectedRef = ref(rtdb, '.info/connected');
 

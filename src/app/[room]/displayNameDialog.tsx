@@ -1,26 +1,14 @@
 import { useRoomContext } from '@/app/[room]/roomContext';
 import { TextField } from '@/app/_ui/textField';
-import { updateRoom, updateUser } from '@/lib/dbQueries';
-import { auth } from '@/lib/firebase';
+import { joinRoom, updateUser } from '@/lib/dbQueries';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useUserContext } from '../userContext';
 
 function DisplayNameForm() {
   const user = useUserContext()!;
-  const room = useRoomContext()!;
   const onSubmit = async (e: FormData) => {
     await updateUser(user.id, {
-      displayName: e.get('displayName') as string,
-    });
-    await updateRoom(room.id, {
-      ...room,
-      players: [
-        ...room.players.filter((pl) => pl.userId !== auth.currentUser!.uid),
-        {
-          userId: auth.currentUser!.uid,
-          displayName: auth.currentUser!.displayName!,
-        },
-      ],
+      displayName: e.get('displayName') as string
     });
   };
 
@@ -52,7 +40,8 @@ export function DisplayNameDialog() {
     <Dialog.Root open={true}>
       <Dialog.Portal>
         <Dialog.Overlay className="bg-cyan-950/50 fixed inset-0 z-[1]" />
-        <Dialog.Content className="z-[2] fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none border px-8 py-16">
+        <Dialog.Content
+          className="z-[2] fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none border px-8 py-16">
           <DisplayNameForm />
         </Dialog.Content>
       </Dialog.Portal>

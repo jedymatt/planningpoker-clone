@@ -37,7 +37,8 @@ export default function RoomPage() {
           activeUsers
             .filter(
               (userId) =>
-                !!room.players.find((player) => player.userId === userId),
+                !!room.players //
+                  .find((player) => player.userId === userId),
             )
             .map(async (userId) => {
               return await getUserById(userId);

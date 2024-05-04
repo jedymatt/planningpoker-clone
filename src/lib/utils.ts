@@ -6,11 +6,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function distributeSeat(players: Room['players']) {
-  const top: Room['players'] = [];
-  const bottom: Room['players'] = [];
-  const left: Room['players'] = [];
-  const right: Room['players'] = [];
+export function distributeSeat<T>(players: T[]) {
+  const top: T[] = [];
+  const bottom: T[] = [];
+  const left: T[] = [];
+  const right: T[] = [];
 
   players.forEach((player, index) => {
     if (index === 0) {

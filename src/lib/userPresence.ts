@@ -19,13 +19,12 @@ export function listenToUserPresenceInRoom(
   });
 }
 
-/**
- * @param roomId
- * @returns IDs of the active users in the room
- */
-export async function getActiveUsersInRoom(roomId: string) {
+export function onActiveUsersInRoomChanged(
+  roomId: string,
+  callback: (users: string[]) => void,
+) {
   const usersRef = ref(rtdb, `rooms/${roomId}/users`);
-  const snapshot = await get(usersRef);
-
-  return snapshot.val() !== null ? Object.keys(snapshot.val()) : [];
+  return onValue(usersRef, (snapshot) => {
+    callback(snapshot.val() !== null ? Object.keys(snapshot.val()) : []);
+  });
 }

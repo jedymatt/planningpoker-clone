@@ -155,16 +155,16 @@ export async function getUserByUid(uid: string): Promise<User | null> {
   return UserSchema.parse({ ...docSnap.data(), id: docSnap.id });
 }
 
-// export async function getUserById(id: string): Promise<User | null> {
-//   const docRef = doc(db, 'users', id);
-//   const docSnap = await getDoc(docRef);
+export async function getUserById(id: string): Promise<User | null> {
+  const docRef = doc(db, 'users', id);
+  const docSnap = await getDoc(docRef);
 
-//   if (!docSnap.exists()) {
-//     return null;
-//   }
+  if (!docSnap.exists()) {
+    return null;
+  }
 
-//   return UserSchema.parse({ ...docSnap.data(), id: docSnap.id });
-// }
+  return UserSchema.parse({ ...docSnap.data(), id: docSnap.id });
+}
 
 export async function getCurrentUser() {
   if (!auth.currentUser) return null;

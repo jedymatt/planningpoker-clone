@@ -7,31 +7,66 @@ import { useRoomContext } from '@/app/[room]/roomContext';
 import { StartVotingButton } from '@/app/[room]/startVotingButton';
 import { VotingResultSection } from '@/app/[room]/votingResultSection';
 import { Card } from '@/app/_ui/card';
-import { kickPlayerFromRoom } from '@/lib/dbQueries';
+import { getUserById, kickPlayerFromRoom } from '@/lib/dbQueries';
 import { cn, distributeSeat } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useUserContext } from '../userContext';
 import { useEffect, useState } from 'react';
-import { listenToUserPresenceInRoom } from '@/lib/userPresence';
-import { Room } from '@/lib/schemas';
+import {
+  listenToUserPresenceInRoom,
+  onActiveUsersInRoomChanged,
+} from '@/lib/userPresence';
+import { User } from '@/lib/schemas';
 
 export default function RoomPage() {
   const room = useRoomContext()!;
   const user = useUserContext()!;
+  const [activePlayers, setActivePlayers] = useState<User[]>([]);
 
   useEffect(() => {
-    return listenToUserPresenceInRoom(room.id, user.id, user.displayName);
+    const unsubPresence = listenToUserPresenceInRoom(
+      room.id,
+      user.id,
+      user.displayName,
+    );
+
+    const unsubActiveUsers = onActiveUsersInRoomChanged(
+      room.id,
+      async (activeUsers) => {
+        const fetchedUsers: Array<User | null> = await Promise.all(
+          activeUsers
+            .filter(
+              (userId) =>
+                !!room.players //
+                  .find((player) => player.userId === userId),
+            )
+            .map(async (userId) => {
+              return await getUserById(userId);
+            }),
+        );
+
+        setActivePlayers(
+          fetchedUsers.filter((user): user is User => user !== null),
+        );
+      },
+    );
+
+    return () => {
+      unsubPresence();
+      unsubActiveUsers();
+    };
   }, [room, user]);
 
-  const isPlayer = !!room.players.find((player) => player.userId === user.id);
+  const isPlayer = !!activePlayers //
+    .find((player) => player.id === user.id);
 
-  const { top, bottom, left, right } = distributeSeat(room.players);
+  const { top, bottom, left, right } = distributeSeat(activePlayers);
 
-  const CardRenderer = ({ player }: { player: Room['players'][number] }) => {
+  const CardRenderer = ({ player }: { player: User }) => {
     const [hovered, setHovered] = useState(false);
     const isRoomOwner = user.id === room.ownerId;
-    const isCardOwner = user.id === player.userId;
-    const isBlankCard = room.votes[player.userId] == null;
+    const isCardOwner = user.id === player.id;
+    const isBlankCard = room.votes[player.id] == null;
 
     const showKickButton = isRoomOwner && !isCardOwner && hovered;
 
@@ -45,7 +80,7 @@ export default function RoomPage() {
           <Card
             className={cn(isBlankCard && showKickButton && 'bg-gray-300')}
             state={room.revealCards ? 'reveal' : 'hide'}
-            value={room.votes[player.userId]}
+            value={room.votes[player.id]}
           />
 
           <div className="mt-2 font-bold text-center">{player.displayName}</div>
@@ -59,7 +94,7 @@ export default function RoomPage() {
               onMouseLeave={() => setHovered(false)}
               onClick={async () => {
                 if (user.id === room.ownerId) {
-                  await kickPlayerFromRoom(player.userId, room.id);
+                  await kickPlayerFromRoom(player.id, room.id);
                 }
               }}
             >
@@ -92,20 +127,20 @@ export default function RoomPage() {
         <div
           style={{
             gridTemplateColumns: '8rem 1fr 8rem',
-            gridTemplateRows: '8rem 1fr 8rem'
+            gridTemplateRows: '8rem 1fr 8rem',
           }}
           className="grid gap-4"
         >
           <div></div>
           <div className="flex justify-around px-12 gap-x-12">
             {top.map((player) => (
-              <CardRenderer key={player.userId} player={player} />
+              <CardRenderer key={player.id} player={player} />
             ))}
           </div>
           <div></div>
           <div className="flex justify-end">
             {left.map((player) => (
-              <CardRenderer key={player.userId} player={player} />
+              <CardRenderer key={player.id} player={player} />
             ))}
           </div>
           <div className="flex items-center justify-center bg-blue-100 auto-cols-max rounded-3xl min-h-48 min-w-72">
@@ -113,22 +148,22 @@ export default function RoomPage() {
               {room.revealCards && <StartVotingButton />}
               {!room.revealCards &&
                 Object.values(room.votes).filter((e) => e !== null).length >
-                0 && <RevealCardsButton />}
+                  0 && <RevealCardsButton />}
               {!room.revealCards &&
                 Object.values(room.votes).filter((e) => e !== null).length ===
-                0 &&
+                  0 &&
                 'Pick your cards!'}
             </div>
           </div>
           <div className="flex">
             {right.map((player) => (
-              <CardRenderer key={player.userId} player={player} />
+              <CardRenderer key={player.id} player={player} />
             ))}
           </div>
           <div></div>
           <div className="flex justify-around px-12 gap-x-12">
             {bottom.map((player) => (
-              <CardRenderer key={player.userId} player={player} />
+              <CardRenderer key={player.id} player={player} />
             ))}
           </div>
           <div></div>

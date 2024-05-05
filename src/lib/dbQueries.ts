@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   doc,
+  documentId,
   getDoc,
   getDocs,
   onSnapshot,
@@ -12,7 +13,6 @@ import {
 import { z } from 'zod';
 import { auth, db } from './firebase';
 import { Room, RoomSchema, User, UserSchema } from './schemas';
-import { clone } from 'lodash';
 
 export async function saveRoom(room: Pick<Room, 'name' | 'cards' | 'ownerId'>) {
   const roomResult = RoomSchema.pick({
@@ -237,4 +237,22 @@ export async function setPlayersInRoom(
   const docRef = doc(db, 'rooms', roomId);
 
   await updateDoc(docRef, { players });
+}
+
+export function onUsersChanged(
+  userIds: string[],
+  callback: (users: User[]) => void,
+) {
+  const usersRef = userIds.map((id) => doc(db, 'users', id));
+  const q = query(collection(db, 'users'), where(documentId(), 'in', usersRef));
+
+  return onSnapshot(q, (snapshot) => {
+    console.log({ size: snapshot.size });
+
+    const users = snapshot.docs.map((doc) =>
+      UserSchema.parse({ ...doc.data(), id: doc.id }),
+    );
+
+    callback(users);
+  });
 }

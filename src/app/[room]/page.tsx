@@ -57,8 +57,7 @@ export default function RoomPage() {
     };
   }, [room, user]);
 
-  const isPlayer = !!activePlayers //
-    .find((player) => player.id === user.id);
+  const isPlayer = !!activePlayers.find((player) => player.id === user.id);
 
   const { top, bottom, left, right } = distributeSeat(activePlayers);
 

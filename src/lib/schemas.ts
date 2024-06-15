@@ -13,11 +13,8 @@ export const RoomSchema = z.object({
   id: z.string(),
   name: z.string(),
   cards: z.string().array(),
-  players: z
-    .object({
-      userId: z.string(),
-      displayName: z.string().nullable(),
-    })
+  players: z //
+    .object({ userId: z.string() })
     .array()
     .optional()
     .default([]),

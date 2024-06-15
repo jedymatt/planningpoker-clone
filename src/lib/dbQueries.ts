@@ -60,21 +60,13 @@ export async function joinRoom(
   const { players } = PlayerOnlySchema.parse(docSnap.data());
   const playerIndex = players.findIndex((player) => player.userId === user.id);
 
-  if (
-    playerIndex !== -1 &&
-    players[playerIndex].displayName === user.displayName
-  ) {
+  // already in room
+  if (playerIndex !== -1) {
     return;
   }
 
-  if (playerIndex === -1) {
-    players.push({ userId: user.id, displayName: user.displayName });
-  } else {
-    players[playerIndex].displayName = user.displayName;
-  }
-
   await updateDoc(docRef, <z.infer<typeof PlayerOnlySchema>>{
-    players,
+    players: [...players, { userId: user.id }],
   });
 }
 
@@ -186,6 +178,7 @@ export async function createUser(user: Omit<User, 'id'>) {
 
 /**
  * @param id Document id
+ * @param callback
  */
 export function onUserChanged(id: string, callback: (user: User) => void) {
   return onSnapshot(doc(db, 'users', id), (docSnap) => {

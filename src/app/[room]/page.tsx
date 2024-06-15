@@ -34,15 +34,12 @@ export default function RoomPage() {
       room.id,
       async (activeUsers) => {
         const fetchedUsers: Array<User | null> = await Promise.all(
-          activeUsers
+          room.players
             .filter(
-              (userId) =>
-                !!room.players //
-                  .find((player) => player.userId === userId),
+              (player) =>
+                !!activeUsers.find((active) => active === player.userId) || room.votes[player.userId] != null,
             )
-            .map(async (userId) => {
-              return await getUserById(userId);
-            }),
+            .map((player) => getUserById(player.userId)),
         );
 
         setActivePlayers(

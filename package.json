@@ -16,7 +16,7 @@
     "@tsparticles/confetti": "^3.9.1",
     "firebase": "^10.14.1",
     "framer-motion": "^11.18.2",
-    "lodash": "^4.17.21",
+    "lodash": "^4.18.1",
     "next": "15.5.18",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
